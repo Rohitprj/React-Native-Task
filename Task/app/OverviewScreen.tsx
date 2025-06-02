@@ -5,11 +5,12 @@ import {
   FlatList,
   StyleSheet,
   Dimensions,
-  SafeAreaView,
   TouchableOpacity,
   StatusBar,
+  Platform,
 } from "react-native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import ThreeButtons from "@/components/ThreeButtons";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 25;
@@ -23,24 +24,35 @@ const data = new Array(30).fill(null).map((_, index) => ({
 const OverviewScreen = () => {
   const renderItem = ({ item }: any) => (
     <View style={styles.card}>
-      <Text style={styles.cardCount}>{item.count}</Text>
-      <Text style={styles.cardLabel}>{item.label}</Text>
+      <View style={{ flexDirection: "row", gap: 4 }}>
+        <MaterialCommunityIcons name="purse" size={18} color="#8358EB" />
+        <Text style={styles.cardLabel}>{item.label}</Text>
+      </View>
+      <View style={{}}>
+        <Text style={styles.cardCount}>{item.count}</Text>
+      </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#0A1E44" />
+    <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
+      />
 
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>Overview</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Entypo name="menu" size={28} color="white" style={styles.icon} />
+          <Text style={styles.headerText}>Overview</Text>
+        </View>
         <View style={styles.headerIcons}>
-          <Ionicons name="filter" size={22} color="white" style={styles.icon} />
           <Ionicons name="person-circle-outline" size={26} color="white" />
         </View>
       </View>
-
+      <ThreeButtons />
       {/* Cards */}
       <FlatList
         data={data}
@@ -52,7 +64,7 @@ const OverviewScreen = () => {
       />
 
       {/* Bottom Nav */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         {[
           { name: "Overview", icon: "grid-outline" },
           { name: "Customers", icon: "people-outline" },
@@ -65,24 +77,26 @@ const OverviewScreen = () => {
             <Text style={styles.navText}>{item.name}</Text>
           </TouchableOpacity>
         ))}
-      </View>
-    </SafeAreaView>
+      </View> */}
+    </View>
   );
 };
 
 export default OverviewScreen;
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
+  container: {
     backgroundColor: "#0A1E44",
+    height: "100%",
+    // paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 5,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    // backgroundColor: "red",
   },
   headerText: {
     color: "#fff",
@@ -106,8 +120,9 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     borderRadius: 10,
     paddingVertical: 20,
-    paddingHorizontal: 10,
-    alignItems: "center",
+    paddingHorizontal: 20,
+    gap: 6,
+    // alignItems: "center",
   },
   cardCount: {
     fontSize: 24,
