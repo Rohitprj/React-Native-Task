@@ -1,14 +1,14 @@
 import { Link } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
-  StyleSheet,
-  Image,
   TouchableOpacity,
-  Dimensions,
-  ScrollView,
+  View,
 } from "react-native";
 import { Checkbox } from "react-native-paper";
 
@@ -66,8 +66,8 @@ const LoginScreen = () => {
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
-      <Link href={"/OverviewScreen"}>
-        <TouchableOpacity style={styles.loginButton}>
+      <Link href={"./(tabs)"} style={styles.loginButton}>
+        <TouchableOpacity>
           <Text style={styles.loginButtonText}>Log In</Text>
         </TouchableOpacity>
       </Link>

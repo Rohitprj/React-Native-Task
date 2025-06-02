@@ -1,16 +1,14 @@
+import ThreeButtons from "@/components/ThreeButtons";
+import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
   Dimensions,
-  TouchableOpacity,
+  FlatList,
   StatusBar,
-  Platform,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import ThreeButtons from "@/components/ThreeButtons";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 25;

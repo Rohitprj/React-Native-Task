@@ -1,7 +1,10 @@
-import { View, Text } from "react-native";
-import React from "react";
 import { Stack } from "expo-router";
+import React from "react";
 
 export default function _layout() {
-  return <Stack screenOptions={{ headerShown: false }}></Stack>;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
+    </Stack>
+  );
 }
