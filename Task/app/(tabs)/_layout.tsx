@@ -27,7 +27,7 @@ export default function _layout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Overview",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="home" color={color} />
@@ -38,7 +38,7 @@ export default function _layout() {
       <Tabs.Screen
         name="Category"
         options={{
-          title: "Category",
+          title: "Client",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="category" size={24} color={color} />
@@ -49,7 +49,7 @@ export default function _layout() {
       <Tabs.Screen
         name="MyRides"
         options={{
-          title: "My Rides",
+          title: "Booking",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="car" size={24} color={color} />
@@ -60,7 +60,7 @@ export default function _layout() {
       <Tabs.Screen
         name="Settings"
         options={{
-          title: "Settings",
+          title: "Packages",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <Ionicons name="settings-sharp" size={24} color={color} />
