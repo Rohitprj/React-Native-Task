@@ -1,14 +1,9 @@
-import { View, Text, Dimensions } from "react-native";
-import React from "react";
+import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
-import {
-  FontAwesome,
-  FontAwesome5,
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { Dimensions } from "react-native";
 
-export default function _layout() {
+export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
@@ -27,7 +22,7 @@ export default function _layout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Overview",
+          title: "Home",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="home" color={color} />
@@ -38,7 +33,7 @@ export default function _layout() {
       <Tabs.Screen
         name="Category"
         options={{
-          title: "Client",
+          title: "Category",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="category" size={24} color={color} />
@@ -49,7 +44,7 @@ export default function _layout() {
       <Tabs.Screen
         name="MyRides"
         options={{
-          title: "Booking",
+          title: "My Rides",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="car" size={24} color={color} />
@@ -60,7 +55,7 @@ export default function _layout() {
       <Tabs.Screen
         name="Settings"
         options={{
-          title: "Packages",
+          title: "Settings",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <Ionicons name="settings-sharp" size={24} color={color} />
