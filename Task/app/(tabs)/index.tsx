@@ -60,22 +60,6 @@ const OverviewScreen = () => {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-
-      {/* Bottom Nav */}
-      {/* <View style={styles.bottomNav}>
-        {[
-          { name: "Overview", icon: "grid-outline" },
-          { name: "Customers", icon: "people-outline" },
-          { name: "Clients", icon: "briefcase-outline" },
-          { name: "Bookings", icon: "calendar-outline" },
-          { name: "Finance", icon: "cash-outline" },
-        ].map((item, index) => (
-          <TouchableOpacity key={index} style={styles.navItem}>
-            <Ionicons name={item.icon as any} size={22} color="#fff" />
-            <Text style={styles.navText}>{item.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </View> */}
     </View>
   );
 };

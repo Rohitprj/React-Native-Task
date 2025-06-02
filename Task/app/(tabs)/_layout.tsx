@@ -16,8 +16,8 @@ export default function _layout() {
           alignSelf: "center",
           // paddingBottom: 10,
           backgroundColor: "#1B3170",
-          borderTopWidth: 0, // Remove top border
-          elevation: 0, // Remove shadow on Android
+          borderTopWidth: 0,
+          elevation: 0,
           shadowOpacity: 0,
         },
       }}
