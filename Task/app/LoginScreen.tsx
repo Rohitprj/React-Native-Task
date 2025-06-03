@@ -373,7 +373,7 @@ const LoginScreen = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <Image
-            source={require("../assets/Logo/logo 1.png")}
+            source={require("../assets/Logo/Splash.png")}
             style={styles.logo}
             resizeMode="contain"
           />
