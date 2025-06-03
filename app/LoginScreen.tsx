@@ -1,8 +1,7 @@
 import { loginUser } from "@/utils/authLogin";
 import { storeToken } from "@/utils/tokenStorage";
 import { AntDesign } from "@expo/vector-icons";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Link, useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -20,32 +19,27 @@ import {
 } from "react-native";
 import { Checkbox } from "react-native-paper";
 
-type RootStackParamList = {
-  Login: undefined;
-  Dashboard: undefined;
-};
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
-
 const LoginScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
- const handleLogin = async () => {
+  const handleLogin = async () => {
     try {
       const res = await loginUser(email, password);
+      console.log("Response", res);
+      console.log("ResponseToken", res.user?.token);
       if (res.status === 200 && res.user?.token) {
         await storeToken(res.user.token);
-        Alert.alert('Login Successful');
-        navigation.replace('Dashboard');
+        Alert.alert("Login Successful");
+        router.replace("./(tabs)");
       } else {
-        Alert.alert('Login Failed', res.message);
+        Alert.alert("Login Failed", res.message);
       }
     } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Error', 'Something went wrong');
+      console.error("Login error:", error);
+      Alert.alert("Error", "Something went wrong");
     }
   };
   return (
@@ -114,12 +108,9 @@ const LoginScreen: React.FC = () => {
               <Text style={styles.forgot}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
-
-          <Link href="./(tabs)" asChild>
-            <Pressable style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginText}>Log In</Text>
-            </Pressable>
-          </Link>
+          <Pressable style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginText}>Log In</Text>
+          </Pressable>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
