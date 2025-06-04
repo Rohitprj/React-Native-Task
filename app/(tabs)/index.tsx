@@ -72,151 +72,152 @@ const fetchDashboardData = async (): Promise<void> => {
     setDashboardData(data);
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
-    // setDashboardData({
-    //     valid: true,
-    //     stores: 4,
-    //     employees: 4,
-    //     bookings: 621,
-    //     packages: 8,
-    //     customers: 3091,
-    //     todayLeads: 3,
-    //     monthLeads: 2655,
-    //     sources: [
-    //       {
-    //         name: "WhatsApp",
-    //         leadsCount: 1706
-    //       },
-    //       {
-    //         name: "IVR",
-    //         leadsCount: 4
-    //       },
-    //       {
-    //         name: "Walk In",
-    //         leadsCount: 1
-    //       }
-    //     ],
-    //     stages: [
-    //       {
-    //         name: "Converted",
-    //         leadsCount: 2
-    //       },
-    //       {
-    //         name: "New",
-    //         leadsCount: 1723
-    //       },
-    //       {
-    //         name: "Promising",
-    //         leadsCount: 2
-    //       },
-    //       {
-    //         name: "Appointment Scheduled",
-    //         leadsCount: 8
-    //       },
-    //       {
-    //         name: "Booking confirmed",
-    //         leadsCount: 0
-    //       },
-    //       {
-    //         name: "Not Interested",
-    //         leadsCount: 266
-    //       },
-    //       {
-    //         name: "Completed",
-    //         leadsCount: 1
-    //       },
-    //       {
-    //         name: "Contacted",
-    //         leadsCount: 233
-    //       },
-    //       {
-    //         name: "Others",
-    //         leadsCount: 2641
-    //       },
-    //       {
-    //         name: "Interested",
-    //         leadsCount: 214
-    //       },
-    //       {
-    //         name: "Followed up",
-    //         leadsCount: 26
-    //       },
-    //       {
-    //         name: "Open",
-    //         leadsCount: 168
-    //       },
-    //       {
-    //         name: "non intersted",
-    //         leadsCount: 12
-    //       },
-    //       {
-    //         name: "no answer",
-    //         leadsCount: 18
-    //       },
-    //       {
-    //         name: "ringing",
-    //         leadsCount: 21
-    //       },
-    //       {
-    //         name: "Will Visit",
-    //         leadsCount: 38
-    //       },
-    //       {
-    //         name: "intersted",
-    //         leadsCount: 52
-    //       },
-    //       {
-    //         name: "stays too far",
-    //         leadsCount: 25
-    //       },
-    //       {
-    //         name: "location and our details",
-    //         leadsCount: 4
-    //       },
-    //       {
-    //         name: "Sale closed",
-    //         leadsCount: 5
-    //       },
-    //       {
-    //         name: "call back",
-    //         leadsCount: 40
-    //       },
-    //       {
-    //         name: "Cricheroes",
-    //         leadsCount: 11
-    //       },
-    //       {
-    //         name: "appointment schedule",
-    //         leadsCount: 6
-    //       }
-    //     ],
-    //     todayFollowUps: 0,
-    //     revenue: [
-    //       {
-    //         storeId: 1,
-    //         storeName: "Strike The Ball - Palam Vihar",
-    //         total: 1346664,
-    //         month: 1346664
-    //       },
-    //       {
-    //         storeId: 2,
-    //         storeName: "Strike The Ball - Sector 93",
-    //         total: 1396136,
-    //         month: 1396136
-    //       },
-    //       {
-    //         storeId: 3,
-    //         storeName: "Strike The Ball - Sector 107",
-    //         total: 1000,
-    //         month: 1000
-    //       },
-    //       {
-    //         storeId: 5,
-    //         storeName: "Strike The Ball 10A",
-    //         total: 100500,
-    //         month: 100500
-    //       }
-    //     ]
-    //   });
+    setDashboardData({
+        valid: true,
+        stores: 4,
+        employees: 4,
+        bookings: 621,
+        packages: 8,
+        customers: 3091,
+        todayLeads: 3,
+        monthLeads: 2655,
+        sources: [
+          {
+            name: "WhatsApp",
+            leadsCount: 1706
+          },
+          {
+            name: "IVR",
+            leadsCount: 4
+          },
+          {
+            name: "Walk In",
+            leadsCount: 1
+          }
+        ],
+        stages: [
+          {
+            name: "Converted",
+            leadsCount: 2
+          },
+          {
+            name: "New",
+            leadsCount: 1723
+          },
+          {
+            name: "Promising",
+            leadsCount: 2
+          },
+          {
+            name: "Appointment Scheduled",
+            leadsCount: 8
+          },
+          {
+            name: "Booking confirmed",
+            leadsCount: 0
+          },
+          {
+            name: "Not Interested",
+            leadsCount: 266
+          },
+          {
+            name: "Completed",
+            leadsCount: 1
+          },
+          {
+            name: "Contacted",
+            leadsCount: 233
+          },
+          {
+            name: "Others",
+            leadsCount: 2641
+          },
+          {
+            name: "Interested",
+            leadsCount: 214
+          },
+          {
+            name: "Followed up",
+            leadsCount: 26
+          },
+          {
+            name: "Open",
+            leadsCount: 168
+          },
+          {
+            name: "non intersted",
+            leadsCount: 12
+          },
+          {
+            name: "no answer",
+            leadsCount: 18
+          },
+          {
+            name: "ringing",
+            leadsCount: 21
+          },
+          {
+            name: "Will Visit",
+            leadsCount: 38
+          },
+          {
+            name: "intersted",
+            leadsCount: 52
+          },
+          {
+            name: "stays too far",
+            leadsCount: 25
+          },
+          {
+            name: "location and our details",
+            leadsCount: 4
+          },
+          {
+            name: "Sale closed",
+            leadsCount: 5
+          },
+          {
+            name: "call back",
+            leadsCount: 40
+          },
+          {
+            name: "Cricheroes",
+            leadsCount: 11
+          },
+          {
+            name: "appointment schedule",
+            leadsCount: 6
+          }
+        ],
+        todayFollowUps: 0,
+        revenue: [
+          {
+            storeId: 1,
+            storeName: "Strike The Ball - Palam Vihar",
+            total: 1346664,
+            month: 1346664
+          },
+          {
+            storeId: 2,
+            storeName: "Strike The Ball - Sector 93",
+            total: 1396136,
+            month: 1396136
+          },
+          {
+            storeId: 3,
+            storeName: "Strike The Ball - Sector 107",
+            total: 1000,
+            month: 1000
+          },
+          {
+            storeId: 5,
+            storeName: "Strike The Ball 10A",
+            total: 100500,
+            month: 100500
+          }
+        ]
+      });
+      
     // Consider adding a user-friendly error message here
   } finally {
     setLoading(false);

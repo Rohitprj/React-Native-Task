@@ -1,7 +1,11 @@
+import { fetchBookingsApi } from "@/utils/bookingApi";
+import { BookingData, DisplayBookingItem } from "@/utils/types/bookingTypes";
 import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -10,62 +14,68 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
-const bookingsData = [
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "PAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-  {
-    name: "ANTIKA MISHRA",
-    store: "Strike The Ball - Sector 93",
-    status: "UNPAID",
-  },
-];
-
 const BookingsScreen = () => {
+  const [bookings, setBookings] = useState<DisplayBookingItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+useEffect(() => {
+    const loadBookings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        // apiData will now correctly be BookingData[] directly
+        const apiData: BookingData[] = await fetchBookingsApi(); 
+        
+        // Map the raw API data to the format your FlatList expects
+        const mappedData: DisplayBookingItem[] = apiData.map((booking) => ({
+          id: booking.id,
+          name: booking.customer.name,
+          store: booking.store.name,
+          // Determine status based on 'paid' field or 'status' if preferred
+          // From your screenshot, 'PAID' or 'UNPAID' is shown.
+          // Using 'paid' boolean is more direct for this, but if your API 'status' field
+          // also maps directly to "PAID"/"UNPAID" then that could be used.
+          status: booking.paid ? "PAID" : "UNPAID", 
+        }));
+        setBookings(mappedData);
+      } catch (err) {
+        console.error("Failed to fetch bookings:", err);
+        setError("Failed to load bookings. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBookings();
+  }, []); // Empty dependency array means this runs once on component mount
+
+  // --- START: Loading and Error States ---
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Loading bookings...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={() => { /* Implement retry logic here */ }}>
+          <Text style={styles.buttonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  // --- END: Loading and Error States ---
+
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -109,20 +119,20 @@ const BookingsScreen = () => {
 
       {/* Table Header */}
       <View style={styles.tableHeader}>
-        <Text style={styles.columnHeader}>CUSTOMER</Text>
-        <Text style={styles.columnHeader}>STORE</Text>
-        <Text style={styles.columnHeader}>ACTIONS</Text>
+        <Text style={[styles.columnHeader, { flex: 0.8 }]}>CUSTOMER</Text>
+        <Text style={[styles.columnHeader, { flex: 1 }]}>STORE</Text>
+        <Text style={[styles.columnHeader, { flex: 0.5, textAlign: 'right' }]}>ACTIONS</Text>
       </View>
 
       {/* Booking List */}
       <FlatList
-        data={bookingsData}
+        data={bookings} // Use the fetched and mapped bookings data
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id.toString()} // Use a unique ID from your API
         contentContainerStyle={{ paddingBottom: 30 }}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <View>
+            <View style={{ flex: 0.8 }}>
               <Text style={styles.customerName}>{item.name}</Text>
               <Text
                 style={item.status === "PAID" ? styles.paid : styles.unpaid}
@@ -131,7 +141,7 @@ const BookingsScreen = () => {
               </Text>
             </View>
             <Text style={styles.storeText}>{item.store}</Text>
-            <TouchableOpacity>
+            <TouchableOpacity style={{ flex: 0.5, alignItems: 'flex-end' }}>
               <Icon name="edit-3" size={20} color="#3b82f6" />
             </TouchableOpacity>
           </View>
@@ -146,6 +156,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0f172a",
     paddingHorizontal: 16,
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#fff",
+    marginTop: 10,
+    fontSize: 16,
+  },
+  errorText: {
+    color: "#ef4444",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  retryButton: {
+    backgroundColor: "#3b82f6",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
   },
   header: {
     flexDirection: "row",
@@ -226,6 +257,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomColor: "#1e293b",
     borderBottomWidth: 1,
+    alignItems: 'center', // Align items vertically in the row
   },
   customerName: {
     color: "#fff",
@@ -243,7 +275,7 @@ const styles = StyleSheet.create({
   storeText: {
     color: "#cbd5e0",
     fontSize: 12,
-    flex: 1,
+    flex: 1, // Allow store text to take available space
     marginHorizontal: 5,
   },
 });

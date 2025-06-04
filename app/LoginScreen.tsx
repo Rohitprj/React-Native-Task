@@ -1,5 +1,5 @@
 import { loginUser } from "@/utils/authLogin";
-import { storeToken } from "@/utils/tokenStorage";
+import { getToken, storeToken } from "@/utils/tokenStorage";
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -30,6 +30,8 @@ const LoginScreen: React.FC = () => {
       const res = await loginUser(email, password);
       console.log("Response", res);
       console.log("ResponseToken", res.user?.token);
+      const SecureToken = await getToken();
+      console.log("SecureToken", SecureToken);
       if (res.status === 200 && res.user?.token) {
         await storeToken(res.user.token);
         Alert.alert("Login Successful");
