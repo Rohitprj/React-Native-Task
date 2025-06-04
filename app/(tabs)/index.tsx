@@ -1,5 +1,6 @@
 import ThreeButtons from "@/components/ThreeButtons";
 import overview from "@/utils/overview";
+import { CardItem, DashboardData, LeadSource, LeadStage, Revenue } from "@/utils/types/overviewTypes";
 import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,46 +16,6 @@ import {
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 25;
-
-// TypeScript interfaces for API data
-interface LeadSource {
-  name: string;
-  leadsCount: number;
-}
-
-interface LeadStage {
-  name: string;
-  leadsCount: number;
-}
-
-interface Revenue {
-  storeId: number;
-  storeName: string;
-  total: number;
-  month: number;
-}
-
-interface DashboardData {
-  valid: boolean;
-  stores: number;
-  employees: number;
-  bookings: number;
-  packages: number;
-  customers: number;
-  todayLeads: number;
-  monthLeads: number;
-  sources: LeadSource[];
-  stages: LeadStage[];
-  todayFollowUps: number;
-  revenue: Revenue[];
-}
-
-interface CardItem {
-  id: string;
-  count: number | string;
-  label: string;
-  isRevenue?: boolean;
-}
 
 const OverviewScreen: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -217,7 +178,7 @@ const fetchDashboardData = async (): Promise<void> => {
           }
         ]
       });
-      
+
     // Consider adding a user-friendly error message here
   } finally {
     setLoading(false);
@@ -234,7 +195,7 @@ const fetchDashboardData = async (): Promise<void> => {
       'Total Customers': 'account-multiple',
       'Today Leads': 'trending-up',
       'Month Leads': 'chart-line',
-      'Today CallBacks': 'phone-callback',
+      'Today CallBacks': 'phone-incoming',
       'WhatsApp': 'whatsapp',
       'IVR': 'phone',
       'Walk In': 'walk',
