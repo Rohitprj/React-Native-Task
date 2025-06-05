@@ -5,7 +5,6 @@ import LoginScreen from "./LoginScreen";
 export default function index() {
   return (
     <View>
-      {/* <Text>index</Text> */}
       <LoginScreen />
     </View>
   );
