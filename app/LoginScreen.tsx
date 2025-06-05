@@ -17,7 +17,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { Checkbox } from "react-native-paper";
 
 const LoginScreen: React.FC = () => {
   const router = useRouter();
@@ -97,18 +96,18 @@ const LoginScreen: React.FC = () => {
           </View>
 
           <View style={styles.row}>
-            <View style={styles.checkboxWrapper}>
+            {/* <View style={styles.checkboxWrapper}>
               <Checkbox
                 status={rememberMe ? "checked" : "unchecked"}
                 onPress={() => setRememberMe(!rememberMe)}
                 color="#004AAD"
               />
               <Text style={styles.checkboxLabel}>Remember me</Text>
-            </View>
+            </View> */}
 
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Text style={styles.forgot}>Forgot Password?</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <Pressable style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginText}>Log In</Text>
