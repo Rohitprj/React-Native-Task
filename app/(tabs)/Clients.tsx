@@ -37,9 +37,9 @@ const CustomersScreen = () => {
           style={styles.searchInput}
         />
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <TouchableOpacity style={styles.iconButton}>
+          {/* <TouchableOpacity style={styles.iconButton}>
             <Ionicons name="download-outline" size={20} color="white" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.iconButton}>
             <SimpleLineIcons name="refresh" size={20} color="white" />
           </TouchableOpacity>
