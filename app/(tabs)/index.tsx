@@ -1,7 +1,13 @@
 import ThreeButtons from "@/components/ThreeButtons";
 import overview from "@/utils/overview";
-import { CardItem, DashboardData, LeadSource, LeadStage, Revenue } from "@/utils/types/overviewTypes";
-import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  CardItem,
+  DashboardData,
+  LeadSource,
+  LeadStage,
+  Revenue,
+} from "@/utils/types/overviewTypes";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -18,22 +24,24 @@ const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 25;
 
 const OverviewScreen: React.FC = () => {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch dashboard data
   useEffect(() => {
     fetchDashboardData();
   }, []);
-// Inside your OverviewScreen component:
-const fetchDashboardData = async (): Promise<void> => {
-  try {
-    const data: DashboardData = await overview(); // Directly assign the result
-    console.log("Dashboard Data",data);
-    setDashboardData(data);
-  } catch (error) {
-    console.error('Error fetching dashboard data:', error);
-    setDashboardData({
+  // Inside your OverviewScreen component:
+  const fetchDashboardData = async (): Promise<void> => {
+    try {
+      const data: DashboardData = await overview(); // Directly assign the result
+      console.log("Dashboard Data", data);
+      setDashboardData(data);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      setDashboardData({
         valid: true,
         stores: 4,
         employees: 4,
@@ -45,110 +53,110 @@ const fetchDashboardData = async (): Promise<void> => {
         sources: [
           {
             name: "WhatsApp",
-            leadsCount: 1706
+            leadsCount: 1706,
           },
           {
             name: "IVR",
-            leadsCount: 4
+            leadsCount: 4,
           },
           {
             name: "Walk In",
-            leadsCount: 1
-          }
+            leadsCount: 1,
+          },
         ],
         stages: [
           {
             name: "Converted",
-            leadsCount: 2
+            leadsCount: 2,
           },
           {
             name: "New",
-            leadsCount: 1723
+            leadsCount: 1723,
           },
           {
             name: "Promising",
-            leadsCount: 2
+            leadsCount: 2,
           },
           {
             name: "Appointment Scheduled",
-            leadsCount: 8
+            leadsCount: 8,
           },
           {
             name: "Booking confirmed",
-            leadsCount: 0
+            leadsCount: 0,
           },
           {
             name: "Not Interested",
-            leadsCount: 266
+            leadsCount: 266,
           },
           {
             name: "Completed",
-            leadsCount: 1
+            leadsCount: 1,
           },
           {
             name: "Contacted",
-            leadsCount: 233
+            leadsCount: 233,
           },
           {
             name: "Others",
-            leadsCount: 2641
+            leadsCount: 2641,
           },
           {
             name: "Interested",
-            leadsCount: 214
+            leadsCount: 214,
           },
           {
             name: "Followed up",
-            leadsCount: 26
+            leadsCount: 26,
           },
           {
             name: "Open",
-            leadsCount: 168
+            leadsCount: 168,
           },
           {
             name: "non intersted",
-            leadsCount: 12
+            leadsCount: 12,
           },
           {
             name: "no answer",
-            leadsCount: 18
+            leadsCount: 18,
           },
           {
             name: "ringing",
-            leadsCount: 21
+            leadsCount: 21,
           },
           {
             name: "Will Visit",
-            leadsCount: 38
+            leadsCount: 38,
           },
           {
             name: "intersted",
-            leadsCount: 52
+            leadsCount: 52,
           },
           {
             name: "stays too far",
-            leadsCount: 25
+            leadsCount: 25,
           },
           {
             name: "location and our details",
-            leadsCount: 4
+            leadsCount: 4,
           },
           {
             name: "Sale closed",
-            leadsCount: 5
+            leadsCount: 5,
           },
           {
             name: "call back",
-            leadsCount: 40
+            leadsCount: 40,
           },
           {
             name: "Cricheroes",
-            leadsCount: 11
+            leadsCount: 11,
           },
           {
             name: "appointment schedule",
-            leadsCount: 6
-          }
+            leadsCount: 6,
+          },
         ],
         todayFollowUps: 0,
         revenue: [
@@ -156,64 +164,69 @@ const fetchDashboardData = async (): Promise<void> => {
             storeId: 1,
             storeName: "Strike The Ball - Palam Vihar",
             total: 1346664,
-            month: 1346664
+            month: 1346664,
           },
           {
             storeId: 2,
             storeName: "Strike The Ball - Sector 93",
             total: 1396136,
-            month: 1396136
+            month: 1396136,
           },
           {
             storeId: 3,
             storeName: "Strike The Ball - Sector 107",
             total: 1000,
-            month: 1000
+            month: 1000,
           },
           {
             storeId: 5,
             storeName: "Strike The Ball 10A",
             total: 100500,
-            month: 100500
-          }
-        ]
+            month: 100500,
+          },
+        ],
       });
 
-    // Consider adding a user-friendly error message here
-  } finally {
-    setLoading(false);
-  }
-};
+      // Consider adding a user-friendly error message here
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Function to get appropriate icon for different card types
-  const getCardIcon = (label: string): keyof typeof MaterialCommunityIcons.glyphMap => {
-    const iconMap: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
-      'Total Bookings': 'calendar-check',
-      'Total Packages': 'package-variant',
-      'Total Stores': 'store',
-      'Total Employees': 'account-group',
-      'Total Customers': 'account-multiple',
-      'Today Leads': 'trending-up',
-      'Month Leads': 'chart-line',
-      'Today CallBacks': 'phone-incoming',
-      'WhatsApp': 'whatsapp',
-      'IVR': 'phone',
-      'Walk In': 'walk',
-      'Converted': 'check-circle',
-      'New': 'new-box',
-      'Promising': 'star',
-      'Appointment Scheduled': 'calendar-clock',
-      'Booking confirmed': 'calendar-check',
-      'Not Interested': 'close-circle',
-      'Completed': 'check-all',
-      'Contacted': 'phone-check',
-      'Others': 'dots-horizontal',
-      'Interested': 'heart',
-      'Followed up': 'account-check',
-      'Open': 'folder-open',
+  const getCardIcon = (
+    label: string
+  ): keyof typeof MaterialCommunityIcons.glyphMap => {
+    const iconMap: Record<
+      string,
+      keyof typeof MaterialCommunityIcons.glyphMap
+    > = {
+      "Total Bookings": "calendar-check",
+      "Total Packages": "package-variant",
+      "Total Stores": "store",
+      "Total Employees": "account-group",
+      "Total Customers": "account-multiple",
+      "Today Leads": "trending-up",
+      "Month Leads": "chart-line",
+      "Today CallBacks": "phone-incoming",
+      WhatsApp: "whatsapp",
+      IVR: "phone",
+      "Walk In": "walk",
+      Converted: "check-circle",
+      New: "new-box",
+      Promising: "star",
+      "Appointment Scheduled": "calendar-clock",
+      "Booking confirmed": "calendar-check",
+      "Not Interested": "close-circle",
+      Completed: "check-all",
+      Contacted: "phone-check",
+      Others: "dots-horizontal",
+      Interested: "heart",
+      "Followed up": "account-check",
+      Open: "folder-open",
     };
-    
-    return iconMap[label] || 'purse';
+
+    return iconMap[label] || "purse";
   };
 
   // Prepare data for FlatList
@@ -222,14 +235,18 @@ const fetchDashboardData = async (): Promise<void> => {
 
     const cards: CardItem[] = [
       // Main metrics
-      { id: '1', count: dashboardData.bookings, label: 'Total Bookings' },
-      { id: '2', count: dashboardData.packages, label: 'Total Packages' },
-      { id: '3', count: dashboardData.stores, label: 'Total Stores' },
-      { id: '4', count: dashboardData.employees, label: 'Total Employees' },
-      { id: '5', count: dashboardData.customers, label: 'Total Customers' },
-      { id: '6', count: dashboardData.todayLeads, label: 'Today Leads' },
-      { id: '7', count: dashboardData.monthLeads, label: 'Month Leads' },
-      { id: '8', count: dashboardData.todayFollowUps, label: 'Today CallBacks' },
+      { id: "1", count: dashboardData.bookings, label: "Total Bookings" },
+      { id: "2", count: dashboardData.packages, label: "Total Packages" },
+      { id: "3", count: dashboardData.stores, label: "Total Stores" },
+      { id: "4", count: dashboardData.employees, label: "Total Employees" },
+      { id: "5", count: dashboardData.customers, label: "Total Customers" },
+      { id: "6", count: dashboardData.todayLeads, label: "Today Leads" },
+      { id: "7", count: dashboardData.monthLeads, label: "Month Leads" },
+      {
+        id: "8",
+        count: dashboardData.todayFollowUps,
+        label: "Today CallBacks",
+      },
     ];
 
     // Add lead sources
@@ -257,7 +274,7 @@ const fetchDashboardData = async (): Promise<void> => {
       cards.push({
         id: `revenue_${index}`,
         count: store.month.toLocaleString(),
-        label: store.storeName.replace('Strike The Ball - ', ''),
+        label: store.storeName.replace("Strike The Ball - ", ""),
         isRevenue: true,
       });
     });
@@ -267,21 +284,20 @@ const fetchDashboardData = async (): Promise<void> => {
 
   const renderItem: ListRenderItem<CardItem> = ({ item }) => (
     <View style={styles.card}>
-      <View style={{ flexDirection: "row", gap: 4, alignItems: 'center' }}>
-        <MaterialCommunityIcons 
-          name={getCardIcon(item.label)} 
-          size={18} 
-          color={item.isRevenue ? "#4CAF50" : "#8358EB"} 
+      <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+        <MaterialCommunityIcons
+          name={getCardIcon(item.label)}
+          size={18}
+          color={item.isRevenue ? "#4CAF50" : "#8358EB"}
         />
         <Text style={styles.cardLabel} numberOfLines={2}>
           {item.label}
         </Text>
       </View>
       <View>
-        <Text style={[
-          styles.cardCount,
-          item.isRevenue && { color: '#4CAF50' }
-        ]}>
+        <Text
+          style={[styles.cardCount, item.isRevenue && { color: "#4CAF50" }]}
+        >
           {item.isRevenue ? `₹${item.count}` : item.count}
         </Text>
       </View>
@@ -290,9 +306,16 @@ const fetchDashboardData = async (): Promise<void> => {
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <ActivityIndicator size="large" color="#8358EB" />
-        <Text style={{ color: '#fff', marginTop: 10 }}>Loading Dashboard...</Text>
+        <Text style={{ color: "#fff", marginTop: 10 }}>
+          Loading Dashboard...
+        </Text>
       </View>
     );
   }
@@ -308,16 +331,16 @@ const fetchDashboardData = async (): Promise<void> => {
       {/* Header */}
       <View style={styles.header}>
         <View style={{ flexDirection: "row" }}>
-          <Entypo name="menu" size={28} color="white" style={styles.icon} />
+          {/* <Entypo name="menu" size={28} color="white" style={styles.icon} /> */}
           <Text style={styles.headerText}>Overview</Text>
         </View>
         <View style={styles.headerIcons}>
           <Ionicons name="person-circle-outline" size={26} color="white" />
         </View>
       </View>
-      
+
       <ThreeButtons />
-      
+
       {/* Cards */}
       <FlatList
         data={prepareCardData()}

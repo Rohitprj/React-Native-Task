@@ -1,6 +1,5 @@
 import {
   AntDesign,
-  Entypo,
   Feather,
   Ionicons,
   SimpleLineIcons,
@@ -29,7 +28,7 @@ const CustomersScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Entypo name="menu" size={26} color="white" />
+          {/* <Entypo name="menu" size={26} color="white" /> */}
           <Text style={styles.headerTitle}>Customers</Text>
         </View>
         <Ionicons name="person-circle-outline" size={28} color="white" />

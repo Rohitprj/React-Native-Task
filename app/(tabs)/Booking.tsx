@@ -1,6 +1,6 @@
 import { fetchBookingsApi } from "@/utils/bookingApi";
 import { BookingData, DisplayBookingItem } from "@/utils/types/bookingTypes";
-import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -19,14 +19,14 @@ const BookingsScreen = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-useEffect(() => {
+  useEffect(() => {
     const loadBookings = async () => {
       try {
         setLoading(true);
         setError(null);
         // apiData will now correctly be BookingData[] directly
-        const apiData: BookingData[] = await fetchBookingsApi(); 
-        
+        const apiData: BookingData[] = await fetchBookingsApi();
+
         // Map the raw API data to the format your FlatList expects
         const mappedData: DisplayBookingItem[] = apiData.map((booking) => ({
           id: booking.id,
@@ -36,7 +36,7 @@ useEffect(() => {
           // From your screenshot, 'PAID' or 'UNPAID' is shown.
           // Using 'paid' boolean is more direct for this, but if your API 'status' field
           // also maps directly to "PAID"/"UNPAID" then that could be used.
-          status: booking.paid ? "PAID" : "UNPAID", 
+          status: booking.paid ? "PAID" : "UNPAID",
         }));
         setBookings(mappedData);
       } catch (err) {
@@ -64,7 +64,12 @@ useEffect(() => {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={() => { /* Implement retry logic here */ }}>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => {
+            /* Implement retry logic here */
+          }}
+        >
           <Text style={styles.buttonText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -79,14 +84,14 @@ useEffect(() => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Entypo name="menu" size={26} color="white" />
+          {/* <Entypo name="menu" size={26} color="white" /> */}
           <Text style={styles.headerTitle}>Bookings</Text>
         </View>
         <Ionicons name="person-circle-outline" size={28} color="white" />
       </View>
 
       {/* Filters */}
-      <View style={{ marginBottom: 16 }}>
+      {/* <View style={{ marginBottom: 16 }}>
         <FlatList
           data={["All Stores", "Status", "Paid Status", "Customer"]}
           keyExtractor={(item) => item}
@@ -100,7 +105,7 @@ useEffect(() => {
             </TouchableOpacity>
           )}
         />
-      </View>
+      </View> */}
 
       {/* Search and Action Buttons */}
       <View style={styles.searchRow}>
@@ -121,7 +126,9 @@ useEffect(() => {
       <View style={styles.tableHeader}>
         <Text style={[styles.columnHeader, { flex: 0.8 }]}>CUSTOMER</Text>
         <Text style={[styles.columnHeader, { flex: 1 }]}>STORE</Text>
-        <Text style={[styles.columnHeader, { flex: 0.5, textAlign: 'right' }]}>ACTIONS</Text>
+        <Text style={[styles.columnHeader, { flex: 0.5, textAlign: "right" }]}>
+          ACTIONS
+        </Text>
       </View>
 
       {/* Booking List */}
@@ -141,7 +148,7 @@ useEffect(() => {
               </Text>
             </View>
             <Text style={styles.storeText}>{item.store}</Text>
-            <TouchableOpacity style={{ flex: 0.5, alignItems: 'flex-end' }}>
+            <TouchableOpacity style={{ flex: 0.5, alignItems: "flex-end" }}>
               <Icon name="edit-3" size={20} color="#3b82f6" />
             </TouchableOpacity>
           </View>
@@ -257,7 +264,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomColor: "#1e293b",
     borderBottomWidth: 1,
-    alignItems: 'center', // Align items vertically in the row
+    alignItems: "center", // Align items vertically in the row
   },
   customerName: {
     color: "#fff",

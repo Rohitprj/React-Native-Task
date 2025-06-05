@@ -1,4 +1,4 @@
-import { Entypo, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import React from "react";
 import {
   FlatList,
@@ -23,7 +23,7 @@ const CustomersScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Entypo name="menu" size={26} color="white" />
+          {/* <Entypo name="menu" size={26} color="white" /> */}
           <Text style={styles.headerTitle}>Client</Text>
         </View>
         <Ionicons name="person-circle-outline" size={28} color="white" />
