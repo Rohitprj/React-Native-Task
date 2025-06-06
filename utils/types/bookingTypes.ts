@@ -68,5 +68,34 @@ export interface DisplayBookingItem {
 // Interface for the API response structure
 export interface BookingsApiResponse {
   valid: boolean;
-  bookings: BookingData[]; 
+  bookings: BookingData[];
+}
+// export interface NewBookingPayload {
+//   packageId?: number;
+//   storeId: number;
+//   customerId: number;
+//   bookingType: "Package" | "Custom";
+//   price?: number;
+//   overs?: number;
+// }
+
+// Payload for the original create booking API (e.g., /booking) - uses customerId
+export interface NewBookingPayload {
+  customerId: number;
+  storeId: number;
+  bookingType: "Package" | "Custom";
+  packageId?: number | null; // Optional if bookingType is Custom
+  price?: number | null; // Optional if bookingType is Package
+  overs?: number | null; // Optional if bookingType is Package
+}
+// NEW: Payload for the admin/direct/booking API - uses customer details directly
+export interface AdminDirectBookingPayload {
+  packageId?: number | null; // Optional if bookingType is Custom
+  storeId: number;
+  bookingType: "Package" | "Custom";
+  price?: number | null; // Optional if bookingType is Package
+  overs?: number | null; // Optional if bookingType is Package
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
 }
