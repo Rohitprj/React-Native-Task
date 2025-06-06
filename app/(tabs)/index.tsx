@@ -186,14 +186,11 @@ const OverviewScreen: React.FC = () => {
           },
         ],
       });
-
-      // Consider adding a user-friendly error message here
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to get appropriate icon for different card types
   const getCardIcon = (
     label: string
   ): keyof typeof MaterialCommunityIcons.glyphMap => {
