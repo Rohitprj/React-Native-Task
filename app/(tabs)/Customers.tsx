@@ -28,10 +28,7 @@ interface CustomerData {
   name: string;
   phone: string;
   email: string;
-  createdAt: string; // Assuming the API returns this
-  // Add other fields from your API response if any (e.g., status, orders count)
-  // For 'status' in your current mock data, we'll map it based on other logic or API response if available.
-  // For now, we'll map a dummy status or derive it.
+  createdAt: string;
 }
 
 interface CustomersApiResponse {
