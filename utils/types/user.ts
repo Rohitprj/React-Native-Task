@@ -4,7 +4,6 @@ export interface User {
   name: string;
   role: string;
   token: string;
-  // add more if needed
 }
 
 export interface LoginResponse {

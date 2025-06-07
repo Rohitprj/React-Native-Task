@@ -41,19 +41,16 @@ import {
 interface Customer {
   id: number;
   name: string;
-  // ... other customer properties
 }
 
 interface Store {
   id: number;
   name: string;
-  // ... other store properties
 }
 
 interface Package {
   id: number;
   name: string;
-  // ... other package properties
 }
 
 // Get screen width once outside the component to avoid recalculations
@@ -936,7 +933,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
-  // --- Modal Styles (Replicated from PackagesScreen and existing Bookings) ---
   modalOverlay: {
     flex: 1,
     justifyContent: "center",

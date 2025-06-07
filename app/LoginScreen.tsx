@@ -22,7 +22,6 @@ const LoginScreen: React.FC = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const handleLogin = async () => {
     try {
@@ -122,13 +121,11 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   wrapper: {
-    // flex: 1,
     backgroundColor: "#fff",
   },
   container: {
     paddingHorizontal: 24,
     paddingTop: 60,
-    // flexGrow: 1,
     justifyContent: "center",
   },
   logo: {

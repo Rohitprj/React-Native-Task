@@ -8,20 +8,19 @@ const axiosInstance = axios.create({
   withCredentials: true,
   timeout: 10000, // Request timeout in milliseconds
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorage.getItem('userToken'); // Get the token from AsyncStorage
-      
+      const token = await AsyncStorage.getItem("userToken");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
-      console.error('Error attaching token to request:', error);
+      console.error("Error attaching token to request:", error);
       // You might want to handle this error (e.g., log out the user)
     }
     return config; // Always return the config
@@ -41,13 +40,19 @@ axiosInstance.interceptors.response.use(
     // If the error is 401 (Unauthorized) and it's not a retry attempt
     // and you have a mechanism for refreshing tokens, you could implement it here.
     // For simplicity, we'll just log out for now.
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true; // Mark as retried to prevent infinite loops
 
-      console.warn('Authentication token expired or invalid. Attempting to log out...');
+      console.warn(
+        "Authentication token expired or invalid. Attempting to log out..."
+      );
       // Implement your logout logic here
       // For example, remove the token and navigate to login screen
-      await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem("userToken");
       // Navigate to login screen (you'll need your navigation setup here)
       // Eg: navigation.navigate('Login'); or a global event emitter
     }
