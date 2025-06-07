@@ -2,7 +2,7 @@
 //   createBookingApi,
 //   createDirectBookingApi,
 //   fetchBookingsApi,
-// } from "@/utils/bookingApi"; // Import createDirectBookingApi
+// } from "@/utils/bookingApi";
 // import {
 //   AdminDirectBookingPayload,
 //   BookingData,
@@ -10,6 +10,7 @@
 //   NewBookingPayload,
 // } from "@/utils/types/bookingTypes";
 // import { Ionicons } from "@expo/vector-icons";
+// import { Picker } from "@react-native-picker/picker";
 // import React, { useEffect, useState } from "react";
 // import {
 //   ActivityIndicator,
@@ -29,6 +30,32 @@
 // } from "react-native";
 // import Icon from "react-native-vector-icons/Feather";
 
+// // Assuming you have these API utility functions defined, e.g., in a new `dataFetchApi.ts`
+// import {
+//   fetchCustomersApi,
+//   fetchPackagesApi,
+//   fetchStoresApi,
+// } from "@/utils/bookingApi"; // You'll create these
+
+// // Define types for your API responses (replace with your actual types if different)
+// interface Customer {
+//   id: number;
+//   name: string;
+//   // ... other customer properties
+// }
+
+// interface Store {
+//   id: number;
+//   name: string;
+//   // ... other store properties
+// }
+
+// interface Package {
+//   id: number;
+//   name: string;
+//   // ... other package properties
+// }
+
 // // Get screen width once outside the component to avoid recalculations
 // const screenWidth = Dimensions.get("window").width;
 // const modalCalculatedWidth = screenWidth * 0.9; // Calculate 90% of screen width
@@ -37,6 +64,13 @@
 //   const [bookings, setBookings] = useState<DisplayBookingItem[]>([]);
 //   const [loading, setLoading] = useState<boolean>(true);
 //   const [error, setError] = useState<string | null>(null);
+
+//   // State for dropdown data
+//   const [customers, setCustomers] = useState<Customer[]>([]);
+//   const [stores, setStores] = useState<Store[]>([]);
+//   const [packages, setPackages] = useState<Package[]>([]);
+//   const [dataLoading, setDataLoading] = useState<boolean>(true); // To track dropdown data loading
+//   const [dataError, setDataError] = useState<string | null>(null); // To track dropdown data error
 
 //   // State for the "+ New" (Direct Admin Booking) modal
 //   const [showNewDirectBookingForm, setShowNewDirectBookingForm] =
@@ -91,15 +125,39 @@
 //     }
 //   };
 
+//   // Function to load dropdown data from APIs
+//   const loadDropdownData = async () => {
+//     try {
+//       setDataLoading(true);
+//       setDataError(null);
+//       const [customersResponse, storesResponse, packagesResponse] =
+//         await Promise.all([
+//           fetchCustomersApi(), // Your API call for customers
+//           fetchStoresApi(), // Your API call for stores
+//           fetchPackagesApi(), // Your API call for packages
+//         ]);
+
+//       setCustomers(customersResponse.customers || []); // Assuming response.data.customers
+//       setStores(storesResponse.stores || []); // Assuming response.data.stores
+//       setPackages(packagesResponse.packages || []); // Assuming response.data.packages
+//     } catch (err) {
+//       console.error("Failed to fetch dropdown data:", err);
+//       setDataError("Failed to load necessary data for forms.");
+//     } finally {
+//       setDataLoading(false);
+//     }
+//   };
+
 //   // Initial data load on component mount
 //   useEffect(() => {
 //     loadBookings();
+//     loadDropdownData(); // Load dropdown data when component mounts
 //   }, []);
 
 //   // Handler for the "+ New" (Direct Admin Booking) modal inputs
 //   const handleNewDirectBookingFormChange = (
 //     field: keyof AdminDirectBookingPayload,
-//     value: string
+//     value: string | number | null // Allow null for packageId, price, overs
 //   ) => {
 //     setNewDirectBookingData((prevData) => ({
 //       ...prevData,
@@ -124,7 +182,7 @@
 //       if (!newDirectBookingData.packageId) {
 //         Alert.alert(
 //           "Validation Error",
-//           "Package ID is required for Package booking."
+//           "Package is required for Package booking."
 //         );
 //         setIsSubmittingDirect(false);
 //         return;
@@ -153,7 +211,7 @@
 //     ) {
 //       Alert.alert(
 //         "Validation Error",
-//         "Store ID, Customer Name, Phone, and Email are required."
+//         "Store, Customer Name, Phone, and Email are required."
 //       );
 //       setIsSubmittingDirect(false);
 //       return;
@@ -190,7 +248,7 @@
 //   // Handler for the "Existing Booking" (Customer ID based) modal inputs
 //   const handleCustomerBookingFormChange = (
 //     field: keyof NewBookingPayload,
-//     value: string
+//     value: string | number | null // Allow null for packageId, price, overs
 //   ) => {
 //     setCustomerBookingData((prevData) => ({
 //       ...prevData,
@@ -212,7 +270,7 @@
 //       if (!customerBookingData.packageId) {
 //         Alert.alert(
 //           "Validation Error",
-//           "Package ID is required for Package booking."
+//           "Package is required for Package booking."
 //         );
 //         setIsSubmittingCustomer(false);
 //         return;
@@ -233,11 +291,13 @@
 //     }
 
 //     // Basic validation for common fields
-//     if (isNaN(payload.customerId) || isNaN(payload.storeId)) {
-//       Alert.alert(
-//         "Validation Error",
-//         "Customer ID and Store ID must be valid numbers."
-//       );
+//     if (
+//       isNaN(payload.customerId) ||
+//       payload.customerId === 0 ||
+//       isNaN(payload.storeId) ||
+//       payload.storeId === 0
+//     ) {
+//       Alert.alert("Validation Error", "Customer and Store must be selected.");
 //       setIsSubmittingCustomer(false);
 //       return;
 //     }
@@ -267,20 +327,28 @@
 //     }
 //   };
 
-//   if (loading) {
+//   // Overall loading check for initial data (bookings + dropdown data)
+//   if (loading || dataLoading) {
 //     return (
 //       <View style={[styles.container, styles.centerContent]}>
 //         <ActivityIndicator size="large" color="#3b82f6" />
-//         <Text style={styles.loadingText}>Loading bookings...</Text>
+//         <Text style={styles.loadingText}>Loading data...</Text>
 //       </View>
 //     );
 //   }
 
-//   if (error) {
+//   // Overall error check for initial data
+//   if (error || dataError) {
 //     return (
 //       <View style={[styles.container, styles.centerContent]}>
-//         <Text style={styles.errorText}>{error}</Text>
-//         <TouchableOpacity style={styles.retryButton} onPress={loadBookings}>
+//         <Text style={styles.errorText}>{error || dataError}</Text>
+//         <TouchableOpacity
+//           style={styles.retryButton}
+//           onPress={() => {
+//             loadBookings();
+//             loadDropdownData();
+//           }}
+//         >
 //           <Text style={styles.buttonText}>Retry</Text>
 //         </TouchableOpacity>
 //       </View>
@@ -382,12 +450,7 @@
 //                       styles.typeSelectorButtonActive,
 //                   ]}
 //                   onPress={() =>
-//                     setNewDirectBookingData((prev) => ({
-//                       ...prev,
-//                       bookingType: "Package",
-//                       overs: null, // Clear relevant fields for Package
-//                       price: null,
-//                     }))
+//                     handleNewDirectBookingFormChange("bookingType", "Package")
 //                   }
 //                 >
 //                   <Text
@@ -407,11 +470,7 @@
 //                       styles.typeSelectorButtonActive,
 //                   ]}
 //                   onPress={() =>
-//                     setNewDirectBookingData((prev) => ({
-//                       ...prev,
-//                       bookingType: "Custom",
-//                       packageId: null, // Clear relevant fields for Custom
-//                     }))
+//                     handleNewDirectBookingFormChange("bookingType", "Custom")
 //                   }
 //                 >
 //                   <Text
@@ -575,12 +634,7 @@
 //                       styles.typeSelectorButtonActive,
 //                   ]}
 //                   onPress={() =>
-//                     setCustomerBookingData((prev) => ({
-//                       ...prev,
-//                       bookingType: "Package",
-//                       overs: null, // Clear relevant fields
-//                       price: null,
-//                     }))
+//                     handleCustomerBookingFormChange("bookingType", "Package")
 //                   }
 //                 >
 //                   <Text
@@ -600,11 +654,7 @@
 //                       styles.typeSelectorButtonActive,
 //                   ]}
 //                   onPress={() =>
-//                     setCustomerBookingData((prev) => ({
-//                       ...prev,
-//                       bookingType: "Custom",
-//                       packageId: null, // Clear relevant fields
-//                     }))
+//                     handleCustomerBookingFormChange("bookingType", "Custom")
 //                   }
 //                 >
 //                   <Text
@@ -619,45 +669,74 @@
 //                 </TouchableOpacity>
 //               </View>
 
-//               {/* Common Fields */}
-//               <Text style={styles.inputLabel}>Customer ID</Text>
-//               <TextInput
-//                 style={styles.formInput}
-//                 placeholder="Enter Customer ID"
-//                 placeholderTextColor="#94a3b8"
-//                 keyboardType="numeric"
-//                 value={customerBookingData.customerId?.toString() || ""}
-//                 onChangeText={(text) =>
-//                   handleCustomerBookingFormChange("customerId", text)
-//                 }
-//               />
+//               {/* Common Fields with Pickers */}
+//               <Text style={styles.inputLabel}>Customer</Text>
+//               <View style={styles.pickerContainer}>
+//                 <Picker
+//                   selectedValue={customerBookingData.customerId.toString()}
+//                   onValueChange={(itemValue) =>
+//                     handleCustomerBookingFormChange("customerId", itemValue)
+//                   }
+//                   style={styles.pickerStyle}
+//                   itemStyle={styles.pickerItemStyle} // Apply text color to items
+//                 >
+//                   <Picker.Item label="Select a customer" value="0" />
+//                   {customers.map((customer) => (
+//                     <Picker.Item
+//                       key={customer.id}
+//                       label={customer.name}
+//                       value={customer.id.toString()}
+//                     />
+//                   ))}
+//                 </Picker>
+//               </View>
 
-//               <Text style={styles.inputLabel}>Store ID</Text>
-//               <TextInput
-//                 style={styles.formInput}
-//                 placeholder="Enter Store ID"
-//                 placeholderTextColor="#94a3b8"
-//                 keyboardType="numeric"
-//                 value={customerBookingData.storeId?.toString() || ""}
-//                 onChangeText={(text) =>
-//                   handleCustomerBookingFormChange("storeId", text)
-//                 }
-//               />
+//               <Text style={styles.inputLabel}>Store</Text>
+//               <View style={styles.pickerContainer}>
+//                 <Picker
+//                   selectedValue={customerBookingData.storeId.toString()}
+//                   onValueChange={(itemValue) =>
+//                     handleCustomerBookingFormChange("storeId", itemValue)
+//                   }
+//                   style={styles.pickerStyle}
+//                   itemStyle={styles.pickerItemStyle}
+//                 >
+//                   <Picker.Item label="Select a store" value="0" />
+//                   {stores.map((store) => (
+//                     <Picker.Item
+//                       key={store.id}
+//                       label={store.name}
+//                       value={store.id.toString()}
+//                     />
+//                   ))}
+//                 </Picker>
+//               </View>
 
 //               {/* Conditional Fields based on Booking Type */}
 //               {customerBookingData.bookingType === "Package" ? (
 //                 <>
-//                   <Text style={styles.inputLabel}>Package ID</Text>
-//                   <TextInput
-//                     style={styles.formInput}
-//                     placeholder="Enter Package ID"
-//                     placeholderTextColor="#94a3b8"
-//                     keyboardType="numeric"
-//                     value={customerBookingData.packageId?.toString() || ""}
-//                     onChangeText={(text) =>
-//                       handleCustomerBookingFormChange("packageId", text)
-//                     }
-//                   />
+//                   <Text style={styles.inputLabel}>Package</Text>
+//                   <View style={styles.pickerContainer}>
+//                     <Picker
+//                       selectedValue={
+//                         customerBookingData.packageId?.toString() || ""
+//                       }
+//                       onValueChange={(itemValue) =>
+//                         handleCustomerBookingFormChange("packageId", itemValue)
+//                       }
+//                       style={styles.pickerStyle}
+//                       itemStyle={styles.pickerItemStyle}
+//                     >
+//                       <Picker.Item label="Select a package" value="" />
+//                       {packages.map((pack) => (
+//                         <Picker.Item
+//                           key={pack.id}
+//                           label={pack.name}
+//                           value={pack.id.toString()}
+//                         />
+//                       ))}
+//                     </Picker>
+//                   </View>
 //                 </>
 //               ) : (
 //                 <>
@@ -873,6 +952,7 @@
 //     borderWidth: 1,
 //     borderColor: "#334155",
 //   },
+
 //   formActions: {
 //     flexDirection: "column",
 //     marginTop: 20,
@@ -927,6 +1007,26 @@
 //   typeSelectorTextActive: {
 //     color: "#fff", // Active text color
 //   },
+//   // --- Picker specific styles ---
+//   pickerContainer: {
+//     backgroundColor: "#0f172a",
+//     borderRadius: 8,
+//     borderWidth: 1,
+//     borderColor: "#334155",
+//     marginBottom: 15,
+//     overflow: "hidden", // Ensures picker content stays within bounds
+//     height: 50, // Set a fixed height for consistency
+//     justifyContent: "center", // Center content vertically
+//   },
+//   pickerStyle: {
+//     color: "#fff", // Text color of the selected item
+//     height: 50, // Must match pickerContainer height
+//     width: "100%",
+//   },
+//   pickerItemStyle: {
+//     color: "#fff", // For individual picker items (iOS only, Android uses pickerStyle color)
+//     fontSize: 16, // Adjust font size for items
+//   },
 // });
 
 // export default BookingsScreen;
@@ -943,7 +1043,7 @@ import {
   NewBookingPayload,
 } from "@/utils/types/bookingTypes";
 import { Ionicons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker"; // Import Picker
+import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -1070,9 +1170,9 @@ const BookingsScreen = () => {
           fetchPackagesApi(), // Your API call for packages
         ]);
 
-      setCustomers(customersResponse.customers || []); // Assuming response.data.customers
-      setStores(storesResponse.stores || []); // Assuming response.data.stores
-      setPackages(packagesResponse.packages || []); // Assuming response.data.packages
+      setCustomers(customersResponse.customers || []); // Assuming response.customers
+      setStores(storesResponse.stores || []); // Assuming response.stores
+      setPackages(packagesResponse.packages || []); // Assuming response.packages
     } catch (err) {
       console.error("Failed to fetch dropdown data:", err);
       setDataError("Failed to load necessary data for forms.");
