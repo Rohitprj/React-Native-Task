@@ -137,9 +137,9 @@
 //           fetchPackagesApi(), // Your API call for packages
 //         ]);
 
-//       setCustomers(customersResponse.customers || []); // Assuming response.data.customers
-//       setStores(storesResponse.stores || []); // Assuming response.data.stores
-//       setPackages(packagesResponse.packages || []); // Assuming response.data.packages
+//       setCustomers(customersResponse.customers || []); // Assuming response.customers
+//       setStores(storesResponse.stores || []); // Assuming response.stores
+//       setPackages(packagesResponse.packages || []); // Assuming response.packages
 //     } catch (err) {
 //       console.error("Failed to fetch dropdown data:", err);
 //       setDataError("Failed to load necessary data for forms.");
@@ -952,7 +952,6 @@
 //     borderWidth: 1,
 //     borderColor: "#334155",
 //   },
-
 //   formActions: {
 //     flexDirection: "column",
 //     marginTop: 20,
@@ -1111,7 +1110,7 @@ const BookingsScreen = () => {
   const [newDirectBookingData, setNewDirectBookingData] =
     useState<AdminDirectBookingPayload>({
       bookingType: "Package", // Default type for this modal
-      storeId: 0, // Placeholder, ensure user inputs a valid number
+      storeId: 0, // Changed to 0 for picker default
       customerName: "",
       customerPhone: "",
       customerEmail: "",
@@ -1203,7 +1202,7 @@ const BookingsScreen = () => {
     setIsSubmittingDirect(true);
 
     let payload: AdminDirectBookingPayload = {
-      storeId: parseInt(newDirectBookingData.storeId as any),
+      storeId: newDirectBookingData.storeId, // storeId is now directly from picker
       bookingType: newDirectBookingData.bookingType,
       customerName: newDirectBookingData.customerName,
       customerPhone: newDirectBookingData.customerPhone,
@@ -1220,7 +1219,7 @@ const BookingsScreen = () => {
         setIsSubmittingDirect(false);
         return;
       }
-      payload.packageId = parseInt(newDirectBookingData.packageId as any);
+      payload.packageId = newDirectBookingData.packageId; // packageId is now directly from picker
     } else {
       // Custom booking
       if (!newDirectBookingData.overs || !newDirectBookingData.price) {
@@ -1235,9 +1234,9 @@ const BookingsScreen = () => {
       payload.price = parseFloat(newDirectBookingData.price as any);
     }
 
-    // Basic validation for common fields
+    // Basic validation for common fields for Direct Admin Booking
     if (
-      isNaN(payload.storeId) ||
+      payload.storeId === 0 || // Validate storeId for picker
       !payload.customerName ||
       !payload.customerPhone ||
       !payload.customerEmail
@@ -1518,7 +1517,7 @@ const BookingsScreen = () => {
                 </TouchableOpacity>
               </View>
 
-              {/* Customer Details for New Direct Booking */}
+              {/* Customer Details for New Direct Booking (Manual Fields) */}
               <Text style={styles.inputLabel}>Customer Name</Text>
               <TextInput
                 style={styles.formInput}
@@ -1555,32 +1554,60 @@ const BookingsScreen = () => {
                 }
               />
 
-              <Text style={styles.inputLabel}>Store ID</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="Enter Store ID"
-                placeholderTextColor="#94a3b8"
-                keyboardType="numeric"
-                value={newDirectBookingData.storeId?.toString() || ""}
-                onChangeText={(text) =>
-                  handleNewDirectBookingFormChange("storeId", text)
-                }
-              />
+              {/* Store Picker for New Direct Booking (API based) */}
+              <Text style={styles.inputLabel}>Store</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={newDirectBookingData.storeId?.toString()}
+                  onValueChange={(itemValue) =>
+                    handleNewDirectBookingFormChange(
+                      "storeId",
+                      parseInt(itemValue as string, 10)
+                    )
+                  }
+                  style={styles.pickerStyle}
+                  itemStyle={styles.pickerItemStyle}
+                >
+                  <Picker.Item label="Select a store" value="0" />
+                  {stores.map((store) => (
+                    <Picker.Item
+                      key={store.id}
+                      label={store.name}
+                      value={store.id.toString()}
+                    />
+                  ))}
+                </Picker>
+              </View>
 
               {/* Conditional Fields based on Booking Type for Direct Admin Booking */}
               {newDirectBookingData.bookingType === "Package" ? (
                 <>
-                  <Text style={styles.inputLabel}>Package ID</Text>
-                  <TextInput
-                    style={styles.formInput}
-                    placeholder="Enter Package ID"
-                    placeholderTextColor="#94a3b8"
-                    keyboardType="numeric"
-                    value={newDirectBookingData.packageId?.toString() || ""}
-                    onChangeText={(text) =>
-                      handleNewDirectBookingFormChange("packageId", text)
-                    }
-                  />
+                  {/* Package Picker for New Direct Booking (API based) */}
+                  <Text style={styles.inputLabel}>Package</Text>
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={
+                        newDirectBookingData.packageId?.toString() || ""
+                      }
+                      onValueChange={(itemValue) =>
+                        handleNewDirectBookingFormChange(
+                          "packageId",
+                          parseInt(itemValue as string, 10)
+                        )
+                      }
+                      style={styles.pickerStyle}
+                      itemStyle={styles.pickerItemStyle}
+                    >
+                      <Picker.Item label="Select a package" value="" />
+                      {packages.map((pack) => (
+                        <Picker.Item
+                          key={pack.id}
+                          label={pack.name}
+                          value={pack.id.toString()}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
                 </>
               ) : (
                 <>
@@ -1869,7 +1896,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    // marginBottom: 5, // Removed, header itself has margin-bottom
+    // Removed, header itself has margin-bottom
   },
   headerTitle: {
     fontSize: 20,
