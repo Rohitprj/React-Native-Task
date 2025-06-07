@@ -61,3 +61,34 @@ export const createDirectBookingApi = async (
     throw error;
   }
 };
+
+export const fetchCustomersApi = async () => {
+  try {
+    const response = await axiosInstance.get("/customer"); // Adjust endpoint as needed
+    // Assuming your customer API returns { customers: [...] } directly
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching customers:", error);
+    throw error;
+  }
+};
+
+export const fetchStoresApi = async () => {
+  try {
+    const response = await axiosInstance.get("/admin/store"); // Adjust endpoint as needed
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching stores:", error);
+    throw error;
+  }
+};
+
+export const fetchPackagesApi = async () => {
+  try {
+    const response = await axiosInstance.get("/admin/package"); // Adjust endpoint as needed
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching packages:", error);
+    throw error;
+  }
+};
