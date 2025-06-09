@@ -67,6 +67,7 @@ export interface DisplayBookingItem {
 
 // Interface for the API response structure
 export interface BookingsApiResponse {
+  message: string;
   valid: boolean;
   bookings: BookingData[];
 }
