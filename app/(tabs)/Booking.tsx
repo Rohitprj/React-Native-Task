@@ -9,7 +9,7 @@ import {
   DisplayBookingItem,
   NewBookingPayload,
 } from "@/utils/types/bookingTypes";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
@@ -364,6 +364,22 @@ const BookingsScreen = () => {
         <Ionicons name="person-circle-outline" size={28} color="white" />
       </View>
 
+      {/* Filters */}
+      <View style={{ marginBottom: 16 }}>
+        <FlatList
+          data={["All Stores", "Status", "Paid Status", "Customer"]}
+          keyExtractor={(item) => item}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterRow}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.filterBtn}>
+              <Text style={styles.filterText}>{item}</Text>
+              <AntDesign name="down" size={14} color="white" />
+            </TouchableOpacity>
+          )}
+        />
+      </View>
       {/* Search and Action Buttons */}
       <View style={styles.searchRow}>
         <TextInput
@@ -1049,6 +1065,24 @@ const styles = StyleSheet.create({
   pickerItemStyle: {
     color: "#fff", // For individual picker items (iOS only, Android uses pickerStyle color)
     fontSize: 16, // Adjust font size for items
+  },
+  filterRow: {
+    flexDirection: "row",
+  },
+  filterBtn: {
+    backgroundColor: "#374151",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    marginRight: 10,
+    height: 30,
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+  },
+  filterText: {
+    color: "#fff",
+    fontSize: 13,
   },
 });
 
