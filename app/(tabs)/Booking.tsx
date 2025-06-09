@@ -1096,6 +1096,7 @@ import {
   fetchBookingsByDateApi,
   fetchBookingsByPaidStatusApi,
   fetchBookingsByStatusApi, // Keep this for default "all bookings"
+
   // Import new API functions
   fetchBookingsByStoreApi,
 } from "@/utils/bookingApi";
@@ -2150,7 +2151,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 0,
   },
   headerLeft: {
     flexDirection: "row",
@@ -2167,6 +2168,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     marginBottom: 16,
+    top: 8,
   },
   searchInput: {
     flex: 1,
@@ -2345,6 +2347,7 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: "row",
     paddingVertical: 10,
+    bottom: 8,
     // Add some padding or margin if needed
   },
   filterPickerContainer: {
@@ -2355,13 +2358,15 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     height: 40, // Height for filter pickers
     justifyContent: "center",
-    minWidth: 120, // Minimum width for each picker
+    minWidth: 160, // Minimum width for each picker
     marginRight: 10, // Spacing between pickers
+    flexShrink: 1,
   },
   filterPickerStyle: {
     color: "#fff",
-    height: 40,
+    height: 50,
     width: "100%",
+    fontSize: 14,
   },
   filterPickerItemStyle: {
     color: "#fff", // iOS specific
