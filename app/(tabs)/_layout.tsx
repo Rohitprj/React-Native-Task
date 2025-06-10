@@ -63,7 +63,7 @@ export default function _layout() {
           }}
         />
         <Tabs.Screen
-          name="Booking"
+          name="Bookings"
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
