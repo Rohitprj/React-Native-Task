@@ -1,5 +1,5 @@
 import axiosInstance from "@/utils/axiosInstance"; // Import axiosInstance
-import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react"; // Import useEffect
 import {
   ActivityIndicator,
@@ -204,6 +204,23 @@ const CustomersScreen = () => {
           <Text style={styles.headerTitle}>Customers</Text>
         </View>
         <Ionicons name="person-circle-outline" size={28} color="white" />
+      </View>
+
+      {/* Filters */}
+      <View style={{ marginBottom: 16 }}>
+        <FlatList
+          data={["Select Stage", "Select Source"]}
+          keyExtractor={(item) => item}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterRow}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.filterBtn}>
+              <Text style={styles.filterText}>{item}</Text>
+              <AntDesign name="down" size={14} color="white" />
+            </TouchableOpacity>
+          )}
+        />
       </View>
 
       {/* Search and New Button */}
@@ -419,6 +436,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
     color: "white", // Default for white buttons, overridden for +New
@@ -542,6 +561,34 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     fontWeight: "600",
     fontSize: 16,
+  },
+  filterRow: {
+    flexDirection: "row",
+  },
+  filterBtn: {
+    backgroundColor: "#374151",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    marginRight: 10,
+    height: 30,
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+  },
+  filterText: {
+    color: "#fff",
+    fontSize: 13,
+  },
+  filterPickerStyle: {
+    color: "#fff",
+    height: 50,
+    width: "100%",
+    fontSize: 14,
+  },
+  filterPickerItemStyle: {
+    color: "#fff", // iOS specific
+    fontSize: 14,
   },
 });
 

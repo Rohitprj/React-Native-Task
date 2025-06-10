@@ -1,5 +1,5 @@
 import axiosInstance from "@/utils/axiosInstance";
-import { Entypo, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -226,7 +226,7 @@ const PackagesScreen: React.FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Entypo name="menu" size={26} color="white" />
+          {/* <Entypo name="menu" size={26} color="white" /> */}
           <Text style={styles.headerTitle}>Packages</Text>
         </View>
         <Ionicons name="person-circle-outline" size={28} color="white" />
