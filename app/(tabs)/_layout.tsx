@@ -71,7 +71,7 @@ export default function _layout() {
             ),
             tabBarLabel: () => (
               <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
-                Booking
+                Bookings
               </Text>
             ),
           }}
