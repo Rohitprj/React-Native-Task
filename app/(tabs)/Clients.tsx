@@ -70,7 +70,13 @@ const CustomersScreen = () => {
           value={searchTerm}
           onChangeText={handleSearch}
         />
-        <TouchableOpacity style={styles.iconButton} onPress={fetchCustomers}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => {
+            setSearchTerm("");
+            fetchCustomers();
+          }}
+        >
           <SimpleLineIcons name="refresh" size={20} color="white" />
         </TouchableOpacity>
       </View>
