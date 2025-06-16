@@ -29,7 +29,7 @@ export default function _layout() {
             ),
             tabBarLabel: () => (
               <Text style={{ fontSize: 12, fontWeight: "600", color: "white" }}>
-                Overview
+                Store
               </Text>
             ),
           }}

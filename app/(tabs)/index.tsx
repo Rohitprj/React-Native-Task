@@ -1,386 +1,147 @@
 import ThreeButtons from "@/components/ThreeButtons";
-import overview from "@/utils/overview";
-import {
-  CardItem,
-  DashboardData,
-  LeadSource,
-  LeadStage,
-  Revenue,
-} from "@/utils/types/overviewTypes";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import axiosInstance from "@/utils/axiosInstance";
+import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  Image,
   ListRenderItem,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity, // Import TouchableOpacity
+  TouchableOpacity,
   View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
-const CARD_WIDTH = width / 2 - 25;
+const FULL_WIDTH_CARD_WIDTH = width - 40;
 
-// Define your RootStackParamList.
-// Ensure these screen names match your actual navigation setup.
 type RootStackParamList = {
   Bookings: undefined;
   Packages: undefined;
   Customers: undefined;
-  Overview: undefined; // Self
-  // No need to list other screens if you're not navigating to them directly from here
+  Overview: undefined;
+  StoreDetails: { storeId: number; storeName: string };
 };
+
+interface StoreApiItem {
+  id: number;
+  name: string;
+}
+
+interface StoreListApiResponse {
+  valid: boolean;
+  stores: StoreApiItem[];
+  message?: string;
+}
 
 const OverviewScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
-    null
-  );
+  const [stores, setStores] = useState<StoreApiItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [headerStoreName, setHeaderStoreName] =
+    useState<string>("Loading Stores...");
 
-  // Fetch dashboard data
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async (): Promise<void> => {
+  const fetchStores = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const data: DashboardData = await overview();
-      console.log("Dashboard Data", data);
-      setDashboardData(data);
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-      // Fallback data in case of API error
-      setDashboardData({
-        valid: true,
-        stores: 4,
-        employees: 4,
-        bookings: 621,
-        packages: 8,
-        customers: 3091,
-        todayLeads: 3,
-        monthLeads: 2655,
-        sources: [
-          {
-            name: "WhatsApp",
-            leadsCount: 1706,
-          },
-          {
-            name: "IVR",
-            leadsCount: 4,
-          },
-          {
-            name: "Walk In",
-            leadsCount: 1,
-          },
-        ],
-        stages: [
-          {
-            name: "Converted",
-            leadsCount: 2,
-          },
-          {
-            name: "New",
-            leadsCount: 1723,
-          },
-          {
-            name: "Promising",
-            leadsCount: 2,
-          },
-          {
-            name: "Appointment Scheduled",
-            leadsCount: 8,
-          },
-          {
-            name: "Booking confirmed",
-            leadsCount: 0,
-          },
-          {
-            name: "Not Interested",
-            leadsCount: 266,
-          },
-          {
-            name: "Completed",
-            leadsCount: 1,
-          },
-          {
-            name: "Contacted",
-            leadsCount: 233,
-          },
-          {
-            name: "Others",
-            leadsCount: 2641,
-          },
-          {
-            name: "Interested",
-            leadsCount: 214,
-          },
-          {
-            name: "Followed up",
-            leadsCount: 26,
-          },
-          {
-            name: "Open",
-            leadsCount: 168,
-          },
-          {
-            name: "non intersted",
-            leadsCount: 12,
-          },
-          {
-            name: "no answer",
-            leadsCount: 18,
-          },
-          {
-            name: "ringing",
-            leadsCount: 21,
-          },
-          {
-            name: "Will Visit",
-            leadsCount: 38,
-          },
-          {
-            name: "intersted",
-            leadsCount: 52,
-          },
-          {
-            name: "stays too far",
-            leadsCount: 25,
-          },
-          {
-            name: "location and our details",
-            leadsCount: 4,
-          },
-          {
-            name: "Sale closed",
-            leadsCount: 5,
-          },
-          {
-            name: "call back",
-            leadsCount: 40,
-          },
-          {
-            name: "Cricheroes",
-            leadsCount: 11,
-          },
-          {
-            name: "appointment schedule",
-            leadsCount: 6,
-          },
-        ],
-        todayFollowUps: 0,
-        revenue: [
-          {
-            storeId: 1,
-            storeName: "Strike The Ball - Palam Vihar",
-            total: 1346664,
-            month: 1346664,
-          },
-          {
-            storeId: 2,
-            storeName: "Strike The Ball - Sector 93",
-            total: 1396136,
-            month: 1396136,
-          },
-          {
-            storeId: 3,
-            storeName: "Strike The Ball - Sector 107",
-            total: 1000,
-            month: 1000,
-          },
-          {
-            storeId: 5,
-            storeName: "Strike The Ball 10A",
-            total: 100500,
-            month: 100500,
-          },
-        ],
-      });
+      const response = await axiosInstance.get<StoreListApiResponse>(
+        "/admin/store"
+      );
+      console.log("Response", response.data);
+      if (response.data?.valid && Array.isArray(response.data?.stores)) {
+        setStores(response.data.stores);
+        if (response.data.stores.length > 0) {
+          setHeaderStoreName("Stores");
+        } else {
+          setHeaderStoreName("No Stores");
+        }
+      } else {
+        console.warn(
+          "API response for /admin/store did not contain valid data:",
+          response.data
+        );
+        setError("Invalid store data received from server.");
+        setHeaderStoreName("Error");
+      }
+    } catch (err: any) {
+      console.error("Error fetching stores:", err);
+      setError(
+        err.message || "Failed to load stores. Please check your network."
+      );
+      setHeaderStoreName("Error");
     } finally {
       setLoading(false);
     }
   };
 
-  const getCardIcon = (
-    label: string
-  ): keyof typeof MaterialCommunityIcons.glyphMap => {
-    const iconMap: Record<
-      string,
-      keyof typeof MaterialCommunityIcons.glyphMap
-    > = {
-      "Total Bookings": "calendar-check",
-      "Total Packages": "package-variant",
-      "Total Stores": "store",
-      "Total Employees": "account-group",
-      "Total Customers": "account-multiple",
-      "Today Leads": "trending-up",
-      "Month Leads": "chart-line",
-      "Today CallBacks": "phone-incoming",
-      WhatsApp: "whatsapp",
-      IVR: "phone",
-      "Walk In": "walk",
-      Converted: "check-circle",
-      New: "new-box",
-      Promising: "star",
-      "Appointment Scheduled": "calendar-clock",
-      "Booking confirmed": "calendar-check",
-      "Not Interested": "close-circle",
-      Completed: "check-all",
-      Contacted: "phone-check",
-      Others: "dots-horizontal",
-      Interested: "heart",
-      "Followed up": "account-check",
-      Open: "folder-open",
-      "non intersted": "emoticon-sad-outline",
-      "no answer": "phone-hangup",
-      ringing: "phone-ring",
-      "Will Visit": "car",
-      intersted: "emoticon-happy-outline",
-      "stays too far": "map-marker-off",
-      "location and our details": "map-marker-check",
-      "Sale closed": "handshake",
-      "call back": "phone-return",
-      Cricheroes: "cricket",
-      "appointment schedule": "calendar-plus",
-    };
+  useEffect(() => {
+    fetchStores();
+  }, []);
 
-    return iconMap[label] || "chart-box-outline";
+  const handleStoreCardPress = (storeId: number, storeName: string) => {
+    navigation.navigate("Bookings", { storeId, storeName });
   };
 
-  // Function to handle card press and navigate ONLY for specified items
-  const handleCardPress = (item: CardItem) => {
-    switch (item.label) {
-      case "Total Bookings":
-        navigation.navigate("Bookings"); // Navigate to Bookings screen
-        break;
-      case "Total Packages":
-        navigation.navigate("Packages"); // Navigate to Packages screen
-        break;
-      case "Total Customers":
-        navigation.navigate("Customers"); // Navigate to Customers screen
-        break;
-      default:
-        // For all other cards, do nothing or log (no navigation)
-        console.log(
-          `Clicked on ${item.label} (No navigation implemented for this item)`
-        );
-        break;
-    }
-  };
-
-  // Prepare data for FlatList
-  const prepareCardData = (): CardItem[] => {
-    if (!dashboardData) return [];
-
-    const cards: CardItem[] = [
-      // Main metrics
-      { id: "1", count: dashboardData.bookings, label: "Total Bookings" },
-      { id: "2", count: dashboardData.packages, label: "Total Packages" },
-      { id: "3", count: dashboardData.stores, label: "Total Stores" },
-      { id: "4", count: dashboardData.employees, label: "Total Employees" },
-      { id: "5", count: dashboardData.customers, label: "Total Customers" },
-      { id: "6", count: dashboardData.todayLeads, label: "Today Leads" },
-      { id: "7", count: dashboardData.monthLeads, label: "Month Leads" },
-      {
-        id: "8",
-        count: dashboardData.todayFollowUps,
-        label: "Today CallBacks",
-      },
-    ];
-
-    // Add lead sources
-    dashboardData.sources.forEach((source: LeadSource, index: number) => {
-      cards.push({
-        id: `source_${index}`,
-        count: source.leadsCount,
-        label: source.name,
-      });
-    });
-
-    // Add lead stages (filter out zero counts for cleaner display)
-    dashboardData.stages
-      .filter((stage: LeadStage) => stage.leadsCount > 0)
-      .forEach((stage: LeadStage, index: number) => {
-        cards.push({
-          id: `stage_${index}`,
-          count: stage.leadsCount,
-          label: stage.name,
-        });
-      });
-
-    // Add revenue data
-    dashboardData.revenue.forEach((store: Revenue, index: number) => {
-      cards.push({
-        id: `revenue_${index}`,
-        count: store.month.toLocaleString(),
-        label: store.storeName.replace("Strike The Ball - ", ""),
-        isRevenue: true,
-      });
-    });
-
-    return cards;
-  };
-
-  const renderItem: ListRenderItem<CardItem> = ({ item }) => {
-    // Determine if the current card should be clickable
-    const isNavigable =
-      item.label === "Total Bookings" ||
-      item.label === "Total Packages" ||
-      item.label === "Total Customers";
-
-    const CardContent = (
-      <View style={styles.card}>
-        <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
-          <MaterialCommunityIcons
-            name={getCardIcon(item.label)}
-            size={18}
-            color={item.isRevenue ? "#4CAF50" : "#8358EB"}
-          />
-          <Text style={styles.cardLabel} numberOfLines={2}>
-            {item.label}
-          </Text>
-        </View>
-        <View>
-          <Text
-            style={[styles.cardCount, item.isRevenue && { color: "#4CAF50" }]}
-          >
-            {item.isRevenue ? `₹${item.count}` : item.count}
-          </Text>
+  const renderStoreItem: ListRenderItem<StoreApiItem> = ({ item }) => (
+    <TouchableOpacity
+      style={styles.storeCard}
+      onPress={() => handleStoreCardPress(item.id, item.name)}
+      activeOpacity={0.8}
+    >
+      <Image
+        source={{
+          uri: `https://placehold.co/360x180/ADD8E6/000000?text=${encodeURIComponent(
+            item.name
+          )}`,
+        }}
+        style={styles.storeImage}
+        onError={(e) => console.log("Image load error:", e.nativeEvent.error)}
+      />
+      <View style={styles.storeInfo}>
+        <Text style={styles.storeName} numberOfLines={1}>
+          {item.name}
+        </Text>
+        <View style={styles.ratingContainer}>
+          <Text style={styles.ratingText}>4.8</Text>
+          <Ionicons name="star" size={16} color="#FFD700" />
         </View>
       </View>
-    );
-
-    if (isNavigable) {
-      return (
-        <TouchableOpacity
-          onPress={() => handleCardPress(item)}
-          activeOpacity={0.7}
-        >
-          {CardContent}
-        </TouchableOpacity>
-      );
-    } else {
-      return CardContent; // Render as a plain View if not navigable
-    }
-  };
+      <Text style={styles.storeLocation} numberOfLines={1}>
+        Strike The Ball Outdoor Net, near Six Flag 2.0, . . .
+      </Text>
+      <TouchableOpacity
+        style={styles.bookingsButton}
+        onPress={() => handleStoreCardPress(item.id, item.name)}
+      >
+        <Text style={styles.bookingsButtonText}>BOOKINGS</Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
+      <View style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color="#8358EB" />
-        <Text style={{ color: "#fff", marginTop: 10 }}>
-          Loading Dashboard...
-        </Text>
+        <Text style={styles.loadingText}>Loading Stores...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={fetchStores}>
+          <Text style={styles.buttonText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -395,8 +156,8 @@ const OverviewScreen: React.FC = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.headerText}>Overview</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={styles.headerText}>{headerStoreName}</Text>
         </View>
         <View style={styles.headerIcons}>
           <Ionicons name="person-circle-outline" size={26} color="white" />
@@ -405,14 +166,19 @@ const OverviewScreen: React.FC = () => {
 
       <ThreeButtons />
 
-      {/* Cards */}
       <FlatList
-        data={prepareCardData()}
-        keyExtractor={(item: CardItem) => item.id}
-        renderItem={renderItem}
-        numColumns={2}
-        contentContainerStyle={styles.listContent}
+        data={stores}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderStoreItem}
+        contentContainerStyle={styles.storeListContent}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() =>
+          !loading && !error && stores.length === 0 ? (
+            <View style={styles.emptyListContainer}>
+              <Text style={styles.emptyListText}>No stores found.</Text>
+            </View>
+          ) : null
+        }
       />
     </View>
   );
@@ -422,16 +188,45 @@ export default OverviewScreen;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: "#0A1E44",
-    height: "100%",
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#fff",
+    marginTop: 10,
+    fontSize: 16,
+  },
+  errorText: {
+    color: "#ef4444",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  retryButton: {
+    backgroundColor: "#3b82f6",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 13,
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 5,
+    paddingTop:
+      Platform.OS === "android" ? (StatusBar.currentHeight ?? 0) + 10 : 50,
+    paddingBottom: 15,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 30,
+    backgroundColor: "#0A1E44",
   },
   headerText: {
     color: "#fff",
@@ -442,51 +237,80 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  icon: {
-    marginRight: 15,
-  },
-  listContent: {
-    paddingHorizontal: 10,
-    paddingBottom: 80,
-  },
-  card: {
-    backgroundColor: "#11245A",
-    margin: 8,
-    width: CARD_WIDTH,
-    borderRadius: 10,
-    paddingVertical: 20,
+  storeListContent: {
     paddingHorizontal: 20,
-    gap: 6,
+    paddingBottom: 20,
   },
-  cardCount: {
-    fontSize: 24,
+  storeCard: {
+    backgroundColor: "#11245A",
+    borderRadius: 10,
+    overflow: "hidden",
+    marginBottom: 20,
+    width: FULL_WIDTH_CARD_WIDTH,
+    alignSelf: "center",
+  },
+  storeImage: {
+    width: "100%",
+    height: 180,
+    resizeMode: "cover",
+  },
+  storeInfo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingTop: 10,
+  },
+  storeName: {
+    color: "#fff",
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 5,
-  },
-  cardLabel: {
-    fontSize: 13,
-    color: "#fff",
-    textAlign: "left",
     flex: 1,
   },
-  bottomNav: {
+  ratingContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#11245A",
-    paddingVertical: 10,
-    borderTopWidth: 0.3,
-    borderTopColor: "#444",
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-  },
-  navItem: {
     alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+    borderRadius: 5,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    gap: 5,
   },
-  navText: {
-    fontSize: 11,
-    color: "#fff",
-    marginTop: 2,
+  ratingText: {
+    color: "#FFD700",
+    fontSize: 14,
+    marginLeft: 4,
+    fontWeight: "bold",
+  },
+  storeLocation: {
+    color: "#cbd5e0",
+    fontSize: 13,
+    paddingHorizontal: 15,
+    marginTop: 5,
+    marginBottom: 10,
+  },
+  bookingsButton: {
+    backgroundColor: "#ffffff",
+    paddingVertical: 12,
+    marginHorizontal: 15,
+    marginBottom: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    borderColor: "#35A494",
+    borderWidth: 2,
+  },
+  bookingsButtonText: {
+    color: "#35A494",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  emptyListContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 50,
+  },
+  emptyListText: {
+    color: "#94a3b8",
+    fontSize: 16,
   },
 });
