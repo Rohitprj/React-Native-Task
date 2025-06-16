@@ -2,6 +2,7 @@ import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
@@ -21,18 +22,37 @@ const CustomersScreen = () => {
   const [customersData, setCustomersData] = useState<Customer[]>([]);
   const [filteredData, setFilteredData] = useState<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchCustomers = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
       const response = await axios.get(
         "https://striketheball.in/api/customer/clients"
       );
-      if (response.data?.valid && response.data?.customers) {
+      if (response.data?.valid && Array.isArray(response.data?.customers)) {
         setCustomersData(response.data.customers);
         setFilteredData(response.data.customers);
+        setSearchTerm("");
+      } else {
+        console.warn(
+          "API response did not contain valid 'customers' array:",
+          response.data
+        );
+        setError("Invalid data received from server. Please try again.");
       }
-    } catch (error) {
-      console.error("Error fetching customers:", error);
+    } catch (err: any) {
+      console.error("Error fetching customers:", err);
+
+      setError(
+        err.message ||
+          "Failed to load customers. Please check your network connection."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,6 +70,26 @@ const CustomersScreen = () => {
     );
     setFilteredData(filtered);
   };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Loading customers...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={fetchCustomers}>
+          <Text style={styles.buttonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -70,13 +110,7 @@ const CustomersScreen = () => {
           value={searchTerm}
           onChangeText={handleSearch}
         />
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() => {
-            setSearchTerm("");
-            fetchCustomers();
-          }}
-        >
+        <TouchableOpacity style={styles.iconButton} onPress={fetchCustomers}>
           <SimpleLineIcons name="refresh" size={20} color="white" />
         </TouchableOpacity>
       </View>
@@ -104,6 +138,14 @@ const CustomersScreen = () => {
             </Text>
           </View>
         )}
+        ListEmptyComponent={() =>
+          !loading &&
+          !error && (
+            <View style={styles.emptyListContainer}>
+              <Text style={styles.emptyListText}>No customers found.</Text>
+            </View>
+          )
+        }
       />
     </View>
   );
@@ -115,6 +157,33 @@ const styles = StyleSheet.create({
     backgroundColor: "#0f172a",
     paddingHorizontal: 16,
     paddingTop: 30,
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#fff",
+    marginTop: 10,
+    fontSize: 16,
+  },
+  errorText: {
+    color: "#ef4444",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  retryButton: {
+    backgroundColor: "#3b82f6",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 13,
   },
   header: {
     flexDirection: "row",
@@ -185,6 +254,16 @@ const styles = StyleSheet.create({
     color: "#cbd5e0",
     fontSize: 12,
     textAlign: "right",
+  },
+  emptyListContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 50,
+  },
+  emptyListText: {
+    color: "#94a3b8",
+    fontSize: 16,
   },
 });
 
