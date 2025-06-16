@@ -1,4 +1,4 @@
-import axiosInstance from "@/utils/axiosInstance"; // Import axiosInstance
+import axiosInstance from "@/utils/axiosInstance"; // Assuming this path is correctly configured in your Expo project
 import { AntDesign, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
@@ -18,9 +18,8 @@ import {
   View,
 } from "react-native";
 
-// Get screen width once outside the component to avoid recalculations
 const screenWidth = Dimensions.get("window").width;
-const modalCalculatedWidth = screenWidth * 0.9; // 90% of screen width
+const modalCalculatedWidth = screenWidth * 0.9;
 
 // --- START: API Interfaces ---
 interface CustomerData {
@@ -29,14 +28,13 @@ interface CustomerData {
   phone: string;
   email: string;
   createdAt: string;
-  // Add other customer properties if they come from the API for display
-  // e.g., stage, source, nextCallbackDate etc.
+  // Potentially add stage, source, nextCallbackDate etc. from API if available
 }
 
 interface CustomersApiResponse {
   valid: boolean;
   customers: CustomerData[];
-  message?: string; // Optional message from API
+  message?: string;
 }
 
 interface StageData {
@@ -61,25 +59,26 @@ interface SourcesApiResponse {
   message?: string;
 }
 
-// Interface for data displayed in FlatList
 interface DisplayCustomerItem {
   id: number;
   name: string;
   phone: string;
-  date: string; // Formatted date
+  date: string;
   status: string; // E.g., "PAID", "UNPAID" - will be mocked or derived
-  // Add stage, source, and next callback date if applicable for display
 }
 
-// Interface for new customer form data (matching API payload)
+// Updated interface for new customer form data, including new fields
 interface NewCustomerFormData {
   name: string;
   phone: string;
   email: string;
+  modeOfPayment?: string; // New: Optional mode of payment
+  utrNumber?: string; // New: Optional UTR number
 }
 // --- END: API Interfaces ---
 
 // --- START: API Functions ---
+// (No changes to API functions for this request, but keeping them for context)
 async function fetchCustomersApi(): Promise<CustomerData[]> {
   try {
     const response = await axiosInstance.get<CustomersApiResponse>("/customer");
@@ -106,6 +105,8 @@ async function createCustomerApi(
   customerData: NewCustomerFormData
 ): Promise<CustomerData> {
   try {
+    // Ensure axiosInstance is correctly configured to send to your backend
+    // Assuming the backend can receive modeOfPayment and utrNumber
     const response = await axiosInstance.post<CustomerData>(
       "/customer",
       customerData
@@ -117,7 +118,6 @@ async function createCustomerApi(
   }
 }
 
-// NEW: Fetch Today's Callbacks
 async function fetchTodayCallbacksApi(): Promise<CustomerData[]> {
   try {
     const response = await axiosInstance.get<CustomersApiResponse>(
@@ -144,7 +144,6 @@ async function fetchTodayCallbacksApi(): Promise<CustomerData[]> {
   }
 }
 
-// NEW: Fetch Lead Stages
 async function fetchStagesApi(): Promise<StageData[]> {
   try {
     const response = await axiosInstance.get<StagesApiResponse>("/lead/stage");
@@ -159,15 +158,14 @@ async function fetchStagesApi(): Promise<StageData[]> {
         "API response for stages did not contain valid 'stages' array:",
         response.data
       );
-      return []; // Return empty array if not valid
+      return [];
     }
   } catch (error) {
     console.error("Error fetching stages:", error);
-    return []; // Return empty array on error
+    return [];
   }
 }
 
-// NEW: Fetch Lead Sources
 async function fetchSourcesApi(): Promise<SourceData[]> {
   try {
     const response = await axiosInstance.get<SourcesApiResponse>(
@@ -184,15 +182,14 @@ async function fetchSourcesApi(): Promise<SourceData[]> {
         "API response for sources did not contain valid 'sources' array:",
         response.data
       );
-      return []; // Return empty array if not valid
+      return [];
     }
   } catch (error) {
     console.error("Error fetching sources:", error);
-    return []; // Return empty array on error
+    return [];
   }
 }
 
-// NEW: Fetch Customers by Stage
 async function fetchCustomersByStageApi(
   stageName: string
 ): Promise<CustomerData[]> {
@@ -222,7 +219,6 @@ async function fetchCustomersByStageApi(
   }
 }
 
-// NEW: Fetch Customers by Source
 async function fetchCustomersBySourceApi(
   sourceName: string
 ): Promise<CustomerData[]> {
@@ -254,9 +250,7 @@ async function fetchCustomersBySourceApi(
 // --- END: API Functions ---
 
 const CustomersScreen = () => {
-  // Master list of customers (all customers or API-filtered by stage/source/today)
   const [customers, setCustomers] = useState<DisplayCustomerItem[]>([]);
-  // List of customers currently displayed (filtered by search term from 'customers')
   const [displayedCustomers, setDisplayedCustomers] = useState<
     DisplayCustomerItem[]
   >([]);
@@ -265,25 +259,35 @@ const CustomersScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const [showNewCustomerForm, setShowNewCustomerForm] =
     useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // For submit button loading
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [newCustomerData, setNewCustomerData] = useState<NewCustomerFormData>({
     name: "",
     phone: "",
     email: "",
+    modeOfPayment: "", // New: Initialize mode of payment
+    utrNumber: "", // New: Initialize UTR number
   });
 
-  // NEW STATES for filtering
   const [stages, setStages] = useState<StageData[]>([]);
   const [sources, setSources] = useState<SourceData[]>([]);
   const [selectedStage, setSelectedStage] = useState<string>("");
   const [selectedSource, setSelectedSource] = useState<string>("");
   const [showStagePicker, setShowStagePicker] = useState<boolean>(false);
   const [showSourcePicker, setShowSourcePicker] = useState<boolean>(false);
-  // State for search term
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Helper to map API CustomerData to DisplayCustomerItem
+  // New state for Mode of Payment picker visibility
+  const [showPaymentModePicker, setShowPaymentModePicker] =
+    useState<boolean>(false);
+
+  // Static options for Mode of Payment dropdown
+  const paymentModeOptions = [
+    { id: "1", name: "Pay via UPI" },
+    { id: "2", name: "Net Banking" },
+    { id: "3", name: "Cash on Delivery" },
+  ];
+
   const mapCustomerDataToDisplay = (
     apiData: CustomerData[]
   ): DisplayCustomerItem[] => {
@@ -296,19 +300,17 @@ const CustomersScreen = () => {
     }));
   };
 
-  // Function to load all customers from API (resets filters)
   const loadAllCustomers = async () => {
     try {
       setLoading(true);
       setError(null);
       const apiData: CustomerData[] = await fetchCustomersApi();
       const mappedData = mapCustomerDataToDisplay(apiData);
-      setCustomers(mappedData); // Set the master list
-      setDisplayedCustomers(mappedData); // Set the displayed list initially
-      // Reset filter selections when loading all customers
+      setCustomers(mappedData);
+      setDisplayedCustomers(mappedData);
       setSelectedStage("");
       setSelectedSource("");
-      setSearchTerm(""); // Also clear search term
+      setSearchTerm("");
     } catch (err: any) {
       console.error("Failed to fetch all customers:", err);
       setError(
@@ -319,16 +321,14 @@ const CustomersScreen = () => {
     }
   };
 
-  // NEW: Handle "Today Callbacks" button press
   const handleTodayCallbacks = async () => {
     try {
       setLoading(true);
       setError(null);
       const apiData: CustomerData[] = await fetchTodayCallbacksApi();
       const mappedData = mapCustomerDataToDisplay(apiData);
-      setCustomers(mappedData); // Update master list
-      setDisplayedCustomers(mappedData); // Update displayed list
-      // Reset other filters and search term when "Today Callbacks" is applied
+      setCustomers(mappedData);
+      setDisplayedCustomers(mappedData);
       setSelectedStage("");
       setSelectedSource("");
       setSearchTerm("");
@@ -342,13 +342,11 @@ const CustomersScreen = () => {
     }
   };
 
-  // NEW: Handle Stage filter selection
   const handleStageFilter = async (stageName: string) => {
     setSelectedStage(stageName);
-    setShowStagePicker(false); // Close the picker modal
+    setShowStagePicker(false);
 
     if (stageName === "") {
-      // If "Select a stage" is chosen, load all customers (which also resets search)
       loadAllCustomers();
     } else {
       try {
@@ -358,11 +356,10 @@ const CustomersScreen = () => {
           stageName
         );
         const mappedData = mapCustomerDataToDisplay(apiData);
-        setCustomers(mappedData); // Update master list
-        setDisplayedCustomers(mappedData); // Update displayed list
-        // Reset other filters and search term when this primary filter is applied
+        setCustomers(mappedData);
+        setDisplayedCustomers(mappedData);
         setSelectedSource("");
-        setSearchTerm(""); // Clear search term as we have new data
+        setSearchTerm("");
       } catch (err: any) {
         console.error(`Failed to fetch customers by stage ${stageName}:`, err);
         setError(
@@ -374,13 +371,11 @@ const CustomersScreen = () => {
     }
   };
 
-  // NEW: Handle Source filter selection
   const handleSourceFilter = async (sourceName: string) => {
     setSelectedSource(sourceName);
-    setShowSourcePicker(false); // Close the picker modal
+    setShowSourcePicker(false);
 
     if (sourceName === "") {
-      // If "Select a source" is chosen, load all customers (which also resets search)
       loadAllCustomers();
     } else {
       try {
@@ -390,11 +385,10 @@ const CustomersScreen = () => {
           sourceName
         );
         const mappedData = mapCustomerDataToDisplay(apiData);
-        setCustomers(mappedData); // Update master list
-        setDisplayedCustomers(mappedData); // Update displayed list
-        // Reset other filters and search term when this primary filter is applied
+        setCustomers(mappedData);
+        setDisplayedCustomers(mappedData);
         setSelectedStage("");
-        setSearchTerm(""); // Clear search term as we have new data
+        setSearchTerm("");
       } catch (err: any) {
         console.error(
           `Failed to fetch customers by source ${sourceName}:`,
@@ -409,36 +403,38 @@ const CustomersScreen = () => {
     }
   };
 
-  // Handle search input - **THIS IS THE KEY CHANGE FOR SEARCH**
   const handleSearch = (text: string) => {
-    setSearchTerm(text); // Update the search input state
+    setSearchTerm(text);
 
     if (text === "") {
-      // If search term is empty, show all currently loaded customers (from 'customers' master list)
       setDisplayedCustomers(customers);
     } else {
       const lowercasedText = text.toLowerCase();
-      // Filter the 'customers' (master) array based on the search term
       const filtered = customers.filter(
         (customer) =>
           customer.name.toLowerCase().includes(lowercasedText) ||
           customer.phone.toLowerCase().includes(lowercasedText)
       );
-      setDisplayedCustomers(filtered); // Update displayed list with search results
+      setDisplayedCustomers(filtered);
     }
   };
 
-  // Initial data load on component mount and fetch filter options
+  // Handler for selecting payment mode
+  const handlePaymentModeSelect = (mode: string) => {
+    setNewCustomerData({ ...newCustomerData, modeOfPayment: mode });
+    setShowPaymentModePicker(false);
+  };
+
   useEffect(() => {
     const initData = async () => {
-      await loadAllCustomers(); // Load initial customers (populates both customers and displayedCustomers)
+      await loadAllCustomers();
       const fetchedStages = await fetchStagesApi();
       setStages(fetchedStages);
       const fetchedSources = await fetchSourcesApi();
       setSources(fetchedSources);
     };
     initData();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   const handleInputChange = (
     field: keyof NewCustomerFormData,
@@ -448,24 +444,27 @@ const CustomersScreen = () => {
   };
 
   const handleAddNewCustomer = async () => {
-    // Basic validation
+    // Basic validation for existing fields
     if (
       !newCustomerData.name ||
       !newCustomerData.phone ||
       !newCustomerData.email
     ) {
-      Alert.alert("Error", "All fields are required.");
+      Alert.alert("Error", "Name, Phone, and Email are required.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await createCustomerApi(newCustomerData); // Call the API
+      // Send all newCustomerData including modeOfPayment and utrNumber
+      await createCustomerApi(newCustomerData);
       Alert.alert("Success", "Customer added successfully!");
       setNewCustomerData({
         name: "",
         phone: "",
         email: "",
+        modeOfPayment: "", // Reset new fields
+        utrNumber: "", // Reset new fields
       });
       setShowNewCustomerForm(false);
       await loadAllCustomers(); // Re-fetch all customers to show the new one and reset filters/search
@@ -556,7 +555,7 @@ const CustomersScreen = () => {
         </ScrollView>
       </View>
 
-      {/* Search, New Button, and Refresh Button (in their original searchRow View) */}
+      {/* Search, New Button, and Refresh Button */}
       <View style={styles.searchRow}>
         <TextInput
           placeholder="Search by name or phone"
@@ -601,7 +600,7 @@ const CustomersScreen = () => {
 
       {/* List */}
       <FlatList
-        data={displayedCustomers} // **UPDATED: Use displayedCustomers for rendering**
+        data={displayedCustomers} // UPDATED: Use displayedCustomers for rendering
         keyExtractor={(item) => item.id.toString()} // Use actual ID from API
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
@@ -676,6 +675,39 @@ const CustomersScreen = () => {
                 autoCapitalize="none"
                 value={newCustomerData.email}
                 onChangeText={(text) => handleInputChange("email", text)}
+              />
+
+              {/* New Field: Mode of Payment */}
+              <Text style={styles.inputLabel}>Mode of Payment</Text>
+              <TouchableOpacity
+                style={styles.formInput} // Re-using formInput style for consistent look
+                onPress={() => setShowPaymentModePicker(true)}
+              >
+                <Text
+                  style={
+                    newCustomerData.modeOfPayment
+                      ? styles.pickerSelectedText
+                      : styles.pickerPlaceholderText
+                  }
+                >
+                  {newCustomerData.modeOfPayment || "Select mode of payment"}
+                </Text>
+                <AntDesign
+                  name="down"
+                  size={14}
+                  color="#94a3b8"
+                  style={styles.pickerIcon}
+                />
+              </TouchableOpacity>
+
+              {/* New Field: UTR Number */}
+              <Text style={styles.inputLabel}>UTR Number</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Enter UTR number (optional)"
+                placeholderTextColor="#94a3b8"
+                value={newCustomerData.utrNumber}
+                onChangeText={(text) => handleInputChange("utrNumber", text)}
               />
 
               <View style={styles.formActions}>
@@ -764,6 +796,45 @@ const CustomersScreen = () => {
                   onPress={() =>
                     handleSourceFilter(
                       item.name === "Select a source" ? "" : item.name
+                    )
+                  }
+                >
+                  <Text style={styles.pickerItemText}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+              ItemSeparatorComponent={() => (
+                <View style={styles.pickerSeparator} />
+              )}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* New: Mode of Payment Picker Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showPaymentModePicker}
+        onRequestClose={() => setShowPaymentModePicker(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setShowPaymentModePicker(false)}
+        >
+          <View style={styles.pickerModalContainer}>
+            <FlatList
+              data={[
+                { id: "0", name: "Select mode of payment" },
+                ...paymentModeOptions,
+              ]} // Add default option
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.pickerItem}
+                  onPress={() =>
+                    handlePaymentModeSelect(
+                      item.name === "Select mode of payment" ? "" : item.name
                     )
                   }
                 >
@@ -947,6 +1018,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#334155",
+    flexDirection: "row", // Added for picker touchable opacity
+    alignItems: "center", // Added for picker touchable opacity
+    justifyContent: "space-between", // Added for picker touchable opacity
+  },
+  pickerSelectedText: {
+    // New style for selected text in picker
+    color: "#fff",
+    fontSize: 16,
+  },
+  pickerPlaceholderText: {
+    // New style for placeholder text in picker
+    color: "#94a3b8",
+    fontSize: 16,
+  },
+  pickerIcon: {
+    // New style for dropdown icon in picker
+    marginLeft: 10,
   },
   formActions: {
     flexDirection: "column",
