@@ -1,5 +1,6 @@
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -9,67 +10,92 @@ import {
   View,
 } from "react-native";
 
-const customersData = new Array(9).fill({
-  name: "ANTIKA MISHRA",
-  phone: "9963455787",
-  date: "2025-06-02",
-  status: "UNPAID",
-});
-customersData[0].status = "PAID";
+type Customer = {
+  id: number;
+  name: string;
+  phone: string;
+  createdAt: string;
+};
 
 const CustomersScreen = () => {
+  const [customersData, setCustomersData] = useState<Customer[]>([]);
+  const [filteredData, setFilteredData] = useState<Customer[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get(
+        "https://striketheball.in/api/customer/clients"
+      );
+      if (response.data?.valid && response.data?.customers) {
+        setCustomersData(response.data.customers);
+        setFilteredData(response.data.customers);
+      }
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const handleSearch = (text: string) => {
+    setSearchTerm(text);
+    const lowercased = text.toLowerCase();
+    const filtered = customersData.filter(
+      (item) =>
+        item.name?.toLowerCase().includes(lowercased) ||
+        item.phone?.includes(lowercased)
+    );
+    setFilteredData(filtered);
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          {/* <Entypo name="menu" size={26} color="white" /> */}
           <Text style={styles.headerTitle}>Client</Text>
         </View>
         <Ionicons name="person-circle-outline" size={28} color="white" />
       </View>
 
-      {/* Search and Download */}
+      {/* Search and Refresh */}
       <View style={styles.searchRow}>
         <TextInput
-          placeholder="Search"
+          placeholder="Search by name or phone"
           placeholderTextColor="#94a3b8"
           style={styles.searchInput}
+          value={searchTerm}
+          onChangeText={handleSearch}
         />
-        <View style={{ flexDirection: "row", gap: 10 }}>
-          {/* <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="download-outline" size={20} color="white" />
-          </TouchableOpacity> */}
-          <TouchableOpacity style={styles.iconButton}>
-            <SimpleLineIcons name="refresh" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.iconButton} onPress={fetchCustomers}>
+          <SimpleLineIcons name="refresh" size={20} color="white" />
+        </TouchableOpacity>
       </View>
 
       {/* Table Headers */}
       <View style={styles.tableHeader}>
-        <Text style={styles.columnHeader}>NAME</Text>
-        <Text style={styles.columnHeader}>PHONE</Text>
-        <Text style={styles.columnHeader}>CREATED ON DATE</Text>
+        <Text style={[styles.columnHeader, { flex: 2 }]}>NAME</Text>
+        <Text style={[styles.columnHeader, { flex: 1 }]}>PHONE</Text>
+        <Text style={[styles.columnHeader, { flex: 1 }]}>CREATED ON DATE</Text>
       </View>
 
       {/* List */}
       <FlatList
-        data={customersData}
-        keyExtractor={(_, index) => index.toString()}
+        data={filteredData}
+        keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <View>
-              <Text style={styles.customerName}>{item.name}</Text>
-              {/* <Text
-                style={item.status === "PAID" ? styles.paid : styles.unpaid}
-              >
-                {item.status}
-              </Text> */}
-            </View>
-            <Text style={styles.customerPhone}>{item.phone}</Text>
-            <Text style={styles.customerDate}>{item.date}</Text>
+            <Text style={[styles.customerName, { flex: 2 }]}>{item.name}</Text>
+            <Text style={[styles.customerPhone, { flex: 1 }]}>
+              {item.phone}
+            </Text>
+            <Text style={[styles.customerDate, { flex: 1 }]}>
+              {new Date(item.createdAt).toLocaleDateString()}
+            </Text>
           </View>
         )}
       />
@@ -100,53 +126,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
   },
-  topRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 12,
-    justifyContent: "space-between",
-  },
-  sampleButton: {
-    backgroundColor: "#1e40af",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  uploadButton: {
-    backgroundColor: "#1e40af",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  newButton: {
-    backgroundColor: "#fff",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 13,
-  },
-  filterRow: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 12,
-  },
-  filterDropdown: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1e293b",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    gap: 6,
-  },
-  filterText: {
-    color: "#fff",
-    fontSize: 13,
-  },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -155,8 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   searchInput: {
-    // flex: 1,
-    width: "50%",
+    width: "70%",
     backgroundColor: "#1e293b",
     color: "#fff",
     borderRadius: 8,
@@ -170,7 +148,6 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
     paddingBottom: 8,
     paddingTop: 12,
     borderBottomColor: "#334155",
@@ -184,7 +161,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
     paddingVertical: 18,
     borderBottomColor: "#1e293b",
     borderBottomWidth: 1,
@@ -194,24 +170,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 13,
   },
-  paid: {
-    color: "#10b981",
-    fontSize: 12,
-  },
-  unpaid: {
-    color: "#ef4444",
-    fontSize: 12,
-  },
   customerPhone: {
     color: "#cbd5e0",
     fontSize: 12,
-    flex: 1,
     textAlign: "center",
   },
   customerDate: {
     color: "#cbd5e0",
     fontSize: 12,
-    flex: 1,
     textAlign: "right",
   },
 });
