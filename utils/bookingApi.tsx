@@ -6,9 +6,6 @@ import {
   NewBookingPayload,
 } from "./types/bookingTypes";
 
-// The base URL is now configured in axiosInstance.ts, so we don't need it here.
-// const BASE_URL = "https://striketheball.in/api"; // No longer needed here
-
 export async function fetchBookingsApi(): Promise<BookingData[]> {
   try {
     const response = await axiosInstance.get<BookingsApiResponse>(
