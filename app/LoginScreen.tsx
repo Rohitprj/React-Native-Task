@@ -1,5 +1,5 @@
 import { loginUser } from "@/utils/authLogin";
-import { getToken, storeToken } from "@/utils/tokenStorage";
+import { storeUserData } from "@/utils/tokenStorage";
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -23,17 +23,42 @@ const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  // const handleLogin = async () => {
+  //   try {
+  //     const res = await loginUser(email, password);
+  //     console.log("Response", res);
+  //     console.log("ResponseToken", res.user?.token);
+  //     const SecureToken = await getToken();
+  //     console.log("SecureToken", SecureToken);
+  //     if (res.status === 200 && res.user?.token) {
+  //       await storeToken(res.user.token);
+  //       Alert.alert("Login Successful");
+  //       router.replace("./(tabs)");
+  //     } else {
+  //       Alert.alert("Login Failed", res.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     Alert.alert("Error", "Something went wrong");
+  //   }
+  // };
+
   const handleLogin = async () => {
     try {
       const res = await loginUser(email, password);
       console.log("Response", res);
-      console.log("ResponseToken", res.user?.token);
-      const SecureToken = await getToken();
-      console.log("SecureToken", SecureToken);
+
       if (res.status === 200 && res.user?.token) {
-        await storeToken(res.user.token);
+        // Save full user data here
+        await storeUserData({
+          email: res.user.email,
+          token: res.user.token,
+          role: res.user.role,
+          appAccess: res.user.appAccess, // must be an object like { clients: true, bookings: true }
+        });
+
         Alert.alert("Login Successful");
-        router.replace("./(tabs)");
+        router.replace("/(tabs)");
       } else {
         Alert.alert("Login Failed", res.message);
       }
@@ -42,6 +67,7 @@ const LoginScreen: React.FC = () => {
       Alert.alert("Error", "Something went wrong");
     }
   };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

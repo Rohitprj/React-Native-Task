@@ -1,5 +1,5 @@
 // app/_layout.tsx
-import { getToken } from "@/utils/tokenStorage";
+import { getUserData } from "@/utils/tokenStorage";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -10,7 +10,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     const check = async () => {
-      const token = await getToken();
+      const token = await getUserData();
       setAuthenticated(!!token);
       setLoading(false);
     };

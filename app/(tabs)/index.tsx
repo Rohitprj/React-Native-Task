@@ -1,6 +1,6 @@
 import ThreeButtons from "@/components/ThreeButtons";
 import axiosInstance from "@/utils/axiosInstance";
-import { removeToken } from "@/utils/tokenStorage";
+import { removeUserData } from "@/utils/tokenStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -55,7 +55,7 @@ const OverviewScreen: React.FC = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await removeToken();
+    await removeUserData();
     router.replace("/LoginScreen");
   };
 
