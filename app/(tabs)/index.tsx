@@ -1,7 +1,9 @@
 import ThreeButtons from "@/components/ThreeButtons";
 import axiosInstance from "@/utils/axiosInstance";
+import { removeToken } from "@/utils/tokenStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -22,7 +24,7 @@ const { width } = Dimensions.get("window");
 const FULL_WIDTH_CARD_WIDTH = width - 40;
 
 type RootStackParamList = {
-  Bookings: undefined;
+  Bookings: { storeId: number; storeName: string };
   Packages: undefined;
   Customers: undefined;
   Overview: undefined;
@@ -49,6 +51,13 @@ const OverviewScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [headerStoreName, setHeaderStoreName] =
     useState<string>("Loading Stores...");
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await removeToken();
+    router.replace("/LoginScreen");
+  };
 
   const fetchStores = async () => {
     setLoading(true);
@@ -168,7 +177,7 @@ const OverviewScreen: React.FC = () => {
           <Ionicons name="person-circle-outline" size={26} color="white" />
         </TouchableOpacity>
       </View>
-      {showLogout && <Button title="Logout" />}
+      {showLogout && <Button title="Logout" onPress={handleLogout} />}
       <ThreeButtons />
 
       <FlatList
