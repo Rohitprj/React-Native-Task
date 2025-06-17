@@ -93,21 +93,6 @@ const LoginScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
           </View>
-
-          <View style={styles.row}>
-            {/* <View style={styles.checkboxWrapper}>
-              <Checkbox
-                status={rememberMe ? "checked" : "unchecked"}
-                onPress={() => setRememberMe(!rememberMe)}
-                color="#004AAD"
-              />
-              <Text style={styles.checkboxLabel}>Remember me</Text>
-            </View> */}
-
-            {/* <TouchableOpacity>
-              <Text style={styles.forgot}>Forgot Password?</Text>
-            </TouchableOpacity> */}
-          </View>
           <Pressable style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginText}>Log In</Text>
           </Pressable>
