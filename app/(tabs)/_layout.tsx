@@ -20,43 +20,34 @@ export default function _layout() {
           },
         }}
       >
-        {false ? (
-          <Tabs.Screen
-            name="index"
-            options={{
-              headerShown: false,
-              tabBarIcon: ({ color }) => (
-                <Image source={require("../../assets/Logo/Frame.png")} />
-              ),
-              tabBarLabel: () => (
-                <Text
-                  style={{ fontSize: 12, fontWeight: "600", color: "white" }}
-                >
-                  Store
-                </Text>
-              ),
-            }}
-          />
-        ) : null}
-
-        {false && (
-          <Tabs.Screen
-            name="Customers"
-            options={{
-              headerShown: false,
-              tabBarIcon: ({ color }) => (
-                <Image source={require("../../assets/Logo/clients.png")} />
-              ),
-              tabBarLabel: () => (
-                <Text
-                  style={{ fontSize: 12, fontWeight: "400", color: "white" }}
-                >
-                  Customers
-                </Text>
-              ),
-            }}
-          />
-        )}
+        <Tabs.Screen
+          name="index"
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color }) => (
+              <Image source={require("../../assets/Logo/Frame.png")} />
+            ),
+            tabBarLabel: () => (
+              <Text style={{ fontSize: 12, fontWeight: "600", color: "white" }}>
+                Store
+              </Text>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="Customers"
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color }) => (
+              <Image source={require("../../assets/Logo/clients.png")} />
+            ),
+            tabBarLabel: () => (
+              <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
+                Customers
+              </Text>
+            ),
+          }}
+        />
         <Tabs.Screen
           name="Clients"
           options={{
