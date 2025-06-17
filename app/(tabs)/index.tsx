@@ -5,6 +5,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Button,
   Dimensions,
   FlatList,
   Image,
@@ -42,6 +43,7 @@ interface StoreListApiResponse {
 const OverviewScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
+  const [showLogout, setShowLogout] = useState(false);
   const [stores, setStores] = useState<StoreApiItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -159,11 +161,14 @@ const OverviewScreen: React.FC = () => {
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.headerText}>{headerStoreName}</Text>
         </View>
-        <View style={styles.headerIcons}>
+        <TouchableOpacity
+          style={styles.headerIcons}
+          onPress={() => setShowLogout(!showLogout)}
+        >
           <Ionicons name="person-circle-outline" size={26} color="white" />
-        </View>
+        </TouchableOpacity>
       </View>
-
+      {showLogout && <Button title="Logout" />}
       <ThreeButtons />
 
       <FlatList
