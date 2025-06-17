@@ -23,17 +23,25 @@ const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
   // const handleLogin = async () => {
   //   try {
   //     const res = await loginUser(email, password);
   //     console.log("Response", res);
-  //     console.log("ResponseToken", res.user?.token);
-  //     const SecureToken = await getToken();
-  //     console.log("SecureToken", SecureToken);
+
   //     if (res.status === 200 && res.user?.token) {
-  //       await storeToken(res.user.token);
+  //       // Save full user data here
+  //       await storeUserData({
+  //         email: res.user.email,
+  //         token: res.user.token,
+  //         role: res.user.role,
+  //         appAccess: res.user.appAccess, // must be an object like { clients: true, bookings: true }
+  //       });
+
   //       Alert.alert("Login Successful");
-  //       router.replace("./(tabs)");
+  //       // router.replace("/(tabs)"); // for admin
+  //       // router.replace("/(subAdmin)");
+  //       // router.replace("/(employee)/Bookings");
   //     } else {
   //       Alert.alert("Login Failed", res.message);
   //     }
@@ -42,32 +50,44 @@ const LoginScreen: React.FC = () => {
   //     Alert.alert("Error", "Something went wrong");
   //   }
   // };
-
   const handleLogin = async () => {
     try {
       const res = await loginUser(email, password);
       console.log("Response", res);
 
       if (res.status === 200 && res.user?.token) {
-        // Save full user data here
+        const user = res.user;
+
+        // Save user data to async storage
         await storeUserData({
-          email: res.user.email,
-          token: res.user.token,
-          role: res.user.role,
-          appAccess: res.user.appAccess, // must be an object like { clients: true, bookings: true }
+          email: user.email,
+          token: user.token,
+          role: user.role,
+          appAccess: user.appAccess,
         });
 
         Alert.alert("Login Successful");
-        router.replace("/(tabs)");
+
+        // Redirect based on role
+        const role = user.role?.toUpperCase();
+
+        if (role === "ADMIN") {
+          router.replace("/(tabs)");
+        } else if (role === "SUBADMIN") {
+          router.replace("/(subAdmin)");
+        } else if (role === "EMPLOYEE") {
+          router.replace("/(employee)/Bookings");
+        } else {
+          Alert.alert("Error", "Invalid role. Please contact support.");
+        }
       } else {
-        Alert.alert("Login Failed", res.message);
+        Alert.alert("Login Failed", res.message || "Invalid credentials");
       }
     } catch (error) {
       console.error("Login error:", error);
-      Alert.alert("Error", "Something went wrong");
+      Alert.alert("Error", "Something went wrong during login");
     }
   };
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

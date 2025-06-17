@@ -20,7 +20,7 @@ export default function _layout() {
           },
         }}
       >
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name="index"
           options={{
             headerShown: false,
@@ -33,8 +33,8 @@ export default function _layout() {
               </Text>
             ),
           }}
-        />
-        <Tabs.Screen
+        /> */}
+        {/* <Tabs.Screen
           name="Customers"
           options={{
             headerShown: false,
@@ -47,9 +47,9 @@ export default function _layout() {
               </Text>
             ),
           }}
-        />
+        /> */}
         <Tabs.Screen
-          name="Clients"
+          name="index"
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
@@ -76,7 +76,7 @@ export default function _layout() {
             ),
           }}
         />
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name="Packages"
           options={{
             headerShown: false,
@@ -89,7 +89,7 @@ export default function _layout() {
               </Text>
             ),
           }}
-        />
+        /> */}
       </Tabs>
     </SafeAreaProvider>
   );
