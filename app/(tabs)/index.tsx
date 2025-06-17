@@ -1,6 +1,6 @@
 import ThreeButtons from "@/components/ThreeButtons";
 import axiosInstance from "@/utils/axiosInstance";
-import { removeUserData } from "@/utils/tokenStorage";
+import { getUserData, removeUserData } from "@/utils/tokenStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -67,6 +67,8 @@ const OverviewScreen: React.FC = () => {
         "/admin/store"
       );
       console.log("Response", response.data);
+      const asyncUserData = await getUserData();
+      console.log("PersistData", asyncUserData);
       if (response.data?.valid && Array.isArray(response.data?.stores)) {
         setStores(response.data.stores);
         if (response.data.stores.length > 0) {
