@@ -74,9 +74,9 @@ const LoginScreen: React.FC = () => {
         if (role === "ADMIN") {
           router.replace("/(admin)/(tabs)");
         } else if (role === "SUBADMIN") {
-          router.replace("/(subAdminDrawer)/(subAdmin)/Bookings");
+          router.replace("/(subAdmin)");
         } else if (role === "EMPLOYEE") {
-          router.replace("/(adminDrawer)/(employee)/Bookings");
+          router.replace("/(employee)/Bookings");
         } else {
           Alert.alert("Error", "Invalid role. Please contact support.");
         }

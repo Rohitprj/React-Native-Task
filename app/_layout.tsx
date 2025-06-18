@@ -15,7 +15,7 @@ export default function RootLayout() {
       console.log("PersistData", userData);
 
       if (userData?.role) {
-        setUserRole(userData.role.toUpperCase());
+        setUserRole(userData.role.toUpperCase() as Role);
       }
 
       setLoading(false);
@@ -39,9 +39,9 @@ export default function RootLayout() {
       ) : userRole === "ADMIN" ? (
         <Stack.Screen name="(admin)" />
       ) : userRole === "SUBADMIN" ? (
-        <Stack.Screen name="(subAdminDrawer)" />
+        <Stack.Screen name="(subAdmin)" />
       ) : userRole === "EMPLOYEE" ? (
-        <Stack.Screen name="(adminDrawer)" />
+        <Stack.Screen name="(employee)" />
       ) : (
         ""
       )}
