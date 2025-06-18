@@ -98,8 +98,6 @@ const navigation = useNavigation<DrawerNavigationProp<any>>();
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        {/* <View style={styles.headerLeft}>
-        </View> */}
         <TouchableOpacity
           onPress={() => navigation.openDrawer()}
           style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
@@ -198,7 +196,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginVertical: 15,
   },
   headerLeft: {
     flexDirection: "row",
