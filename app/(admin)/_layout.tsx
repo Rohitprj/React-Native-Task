@@ -5,9 +5,9 @@ export default function DrawerLayout() {
   return (
     <Drawer
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         drawerPosition: "left",
-        headerLeft: () => <DrawerToggleButton />, // 👈 Show hamburger menu
+        headerLeft: () => <DrawerToggleButton />, 
       }}
     />
   );

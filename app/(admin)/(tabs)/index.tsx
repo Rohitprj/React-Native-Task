@@ -1,7 +1,7 @@
 // import ThreeButtons from "@/components/ThreeButtons";
 // import axiosInstance from "@/utils/axiosInstance";
 // import { getUserData, removeUserData } from "@/utils/tokenStorage";
-// import { Ionicons } from "@expo/vector-icons";
+// import { Feather, Ionicons } from "@expo/vector-icons";
 // import { NavigationProp, useNavigation } from "@react-navigation/native";
 // import { useRouter } from "expo-router";
 // import React, { useEffect, useState } from "react";
@@ -34,7 +34,7 @@
 // interface StoreApiItem {
 //   id: number;
 //   name: string;
-//   images?:string;
+//   image?: string;
 // }
 
 // interface StoreListApiResponse {
@@ -45,6 +45,7 @@
 
 // const OverviewScreen: React.FC = () => {
 //   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+//   const router = useRouter();
 
 //   const [showLogout, setShowLogout] = useState(false);
 //   const [stores, setStores] = useState<StoreApiItem[]>([]);
@@ -52,8 +53,6 @@
 //   const [error, setError] = useState<string | null>(null);
 //   const [headerStoreName, setHeaderStoreName] =
 //     useState<string>("Loading Stores...");
-
-//   const router = useRouter();
 
 //   const handleLogout = async () => {
 //     await removeUserData();
@@ -67,16 +66,32 @@
 //       const response = await axiosInstance.get<StoreListApiResponse>(
 //         "/admin/store"
 //       );
-//       console.log("Response", response.data);
 //       const asyncUserData = await getUserData();
 //       console.log("PersistData", asyncUserData);
+
 //       if (response.data?.valid && Array.isArray(response.data?.stores)) {
-//         setStores(response.data.stores);
-//         if (response.data.stores.length > 0) {
-//           setHeaderStoreName("Stores");
-//         } else {
-//           setHeaderStoreName("No Stores");
-//         }
+//         const imageMap: Record<number, string> = {
+//           1: "https://striketheball.in/Public/gallery/110.jpg",
+//           2: "https://striketheball.in/Public/gallery/93.jpg",
+//           3: "https://striketheball.in/Public/gallery/10A.jpg",
+//           4: "https://striketheball.in/Public/gallery/sector57.jpeg",
+//           5: "https://striketheball.in/Public/gallery/1072.jpg",
+//           6: "https://striketheball.in/Public/gallery/sec107.jpeg",
+//         };
+
+//         const enhancedStores = response.data.stores.map((store) => ({
+//           ...store,
+//           image:
+//             imageMap[store.id] ??
+//             `https://placehold.co/360x180/ADD8E6/000000?text=${encodeURIComponent(
+//               store.name
+//             )}`,
+//         }));
+
+//         setStores(enhancedStores);
+//         setHeaderStoreName(
+//           enhancedStores.length > 0 ? "Stores" : "No Stores"
+//         );
 //       } else {
 //         console.warn(
 //           "API response for /admin/store did not contain valid data:",
@@ -111,13 +126,11 @@
 //       activeOpacity={0.8}
 //     >
 //       <Image
-//         source={{
-//           uri: `https://placehold.co/360x180/ADD8E6/000000?text=${encodeURIComponent(
-//             item.name
-//           )}`,
-//         }}
+//         source={{ uri: item.image }}
 //         style={styles.storeImage}
-//         onError={(e) => console.log("Image load error:", e.nativeEvent.error)}
+//         onError={(e) =>
+//           console.log("Image load error:", e.nativeEvent.error)
+//         }
 //       />
 //       <View style={styles.storeInfo}>
 //         <Text style={styles.storeName} numberOfLines={1}>
@@ -168,9 +181,9 @@
 //         translucent
 //       />
 
-//       {/* Header */}
 //       <View style={styles.header}>
-//         <View style={{ flexDirection: "row", alignItems: "center" }}>
+//         <View style={{ flexDirection: "row", alignItems: "center", gap:10 }}>
+//         <Feather name="menu" size={24} color="white" />
 //           <Text style={styles.headerText}>{headerStoreName}</Text>
 //         </View>
 //         <TouchableOpacity
@@ -332,12 +345,12 @@
 //   },
 // });
 
-
 import ThreeButtons from "@/components/ThreeButtons";
 import axiosInstance from "@/utils/axiosInstance";
 import { getUserData, removeUserData } from "@/utils/tokenStorage";
-import { Ionicons } from "@expo/vector-icons";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -358,14 +371,6 @@ import {
 const { width } = Dimensions.get("window");
 const FULL_WIDTH_CARD_WIDTH = width - 40;
 
-type RootStackParamList = {
-  Bookings: { storeId: number; storeName: string };
-  Packages: undefined;
-  Customers: undefined;
-  Overview: undefined;
-  StoreDetails: { storeId: number; storeName: string };
-};
-
 interface StoreApiItem {
   id: number;
   name: string;
@@ -379,7 +384,7 @@ interface StoreListApiResponse {
 }
 
 const OverviewScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<DrawerNavigationProp<any>>();
   const router = useRouter();
 
   const [showLogout, setShowLogout] = useState(false);
@@ -428,18 +433,13 @@ const OverviewScreen: React.FC = () => {
           enhancedStores.length > 0 ? "Stores" : "No Stores"
         );
       } else {
-        console.warn(
-          "API response for /admin/store did not contain valid data:",
-          response.data
-        );
+        console.warn("Invalid data:", response.data);
         setError("Invalid store data received from server.");
         setHeaderStoreName("Error");
       }
     } catch (err: any) {
       console.error("Error fetching stores:", err);
-      setError(
-        err.message || "Failed to load stores. Please check your network."
-      );
+      setError(err.message || "Failed to load stores.");
       setHeaderStoreName("Error");
     } finally {
       setLoading(false);
@@ -451,7 +451,7 @@ const OverviewScreen: React.FC = () => {
   }, []);
 
   const handleStoreCardPress = (storeId: number, storeName: string) => {
-    navigation.navigate("Bookings", { storeId, storeName });
+    router.push({ pathname: "/Bookings", params: { storeId, storeName } });
   };
 
   const renderStoreItem: ListRenderItem<StoreApiItem> = ({ item }) => (
@@ -517,16 +517,21 @@ const OverviewScreen: React.FC = () => {
       />
 
       <View style={styles.header}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <TouchableOpacity
+          onPress={() => navigation.openDrawer()}
+          style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+        >
+          <Feather name="menu" size={24} color="black" />
           <Text style={styles.headerText}>{headerStoreName}</Text>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.headerIcons}
           onPress={() => setShowLogout(!showLogout)}
         >
-          <Ionicons name="person-circle-outline" size={26} color="white" />
+          <Ionicons name="person-circle-outline" size={26} color="black" />
         </TouchableOpacity>
       </View>
+
       {showLogout && <Button title="Logout" onPress={handleLogout} />}
       <ThreeButtons />
 
@@ -553,7 +558,7 @@ export default OverviewScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0A1E44",
+    backgroundColor: "#edeae4",
   },
   centerContent: {
     justifyContent: "center",
@@ -590,10 +595,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#0A1E44",
+    backgroundColor: "#edeae4",
   },
   headerText: {
-    color: "#fff",
+    color: "black",
     fontSize: 20,
     fontWeight: "600",
   },
@@ -606,7 +611,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   storeCard: {
-    backgroundColor: "#11245A",
+    backgroundColor: "white",
     borderRadius: 10,
     overflow: "hidden",
     marginBottom: 20,
@@ -626,7 +631,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   storeName: {
-    color: "#fff",
+    color: "black",
     fontSize: 18,
     fontWeight: "bold",
     flex: 1,
@@ -634,7 +639,7 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: "#0C2647",
     borderRadius: 5,
     paddingHorizontal: 6,
     paddingVertical: 3,
@@ -647,7 +652,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   storeLocation: {
-    color: "#cbd5e0",
+    color: "lightgrey",
     fontSize: 13,
     paddingHorizontal: 15,
     marginTop: 5,

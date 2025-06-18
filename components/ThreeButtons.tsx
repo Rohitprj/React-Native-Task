@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   iconButton: {
-    backgroundColor: "#1D3B8B",
+    backgroundColor: "#6250D5",
     padding: 5,
     paddingHorizontal: 10,
     borderRadius: 8,
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textButton: {
-    backgroundColor: "#1D3B8B",
+    backgroundColor: "#6250D5",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,

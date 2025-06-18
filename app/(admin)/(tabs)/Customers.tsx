@@ -1,5 +1,7 @@
 import axiosInstance from "@/utils/axiosInstance"; // Assuming this path is correctly configured in your Expo project
-import { AntDesign, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { AntDesign, Feather, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -288,6 +290,7 @@ const CustomersScreen = () => {
     { id: "3", name: "Cash on Delivery" },
   ];
 
+  const navigation = useNavigation<DrawerNavigationProp<any>>();
   const mapCustomerDataToDisplay = (
     apiData: CustomerData[]
   ): DisplayCustomerItem[] => {
@@ -510,9 +513,15 @@ const CustomersScreen = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Customers</Text>
-        </View>
+        {/* <View style={styles.headerLeft}>
+        </View> */}
+        <TouchableOpacity
+          onPress={() => navigation.openDrawer()}
+          style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+        >
+          <Feather name="menu" size={24} color="white" />
+        <Text style={styles.headerTitle}>Customers</Text>
+        </TouchableOpacity>
         <Ionicons name="person-circle-outline" size={28} color="white" />
       </View>
 
@@ -886,6 +895,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
+    paddingVertical: 20,
   },
   headerLeft: {
     flexDirection: "row",

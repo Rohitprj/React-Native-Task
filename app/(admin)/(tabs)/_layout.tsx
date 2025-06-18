@@ -13,7 +13,7 @@ export default function _layout() {
             position: "relative",
             width: Dimensions.get("screen").width,
             alignSelf: "center",
-            backgroundColor: "#1B3170",
+            backgroundColor: "#ffffff",
             borderTopWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
@@ -25,10 +25,10 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("@/assets/Logo/Frame.png")} />
+              <Image source={require("@/assets/Logo/Frame.png")} style={{tintColor:"#6250D5"}} />
             ),
             tabBarLabel: () => (
-              <Text style={{ fontSize: 12, fontWeight: "600", color: "white" }}>
+              <Text style={{ fontSize: 12, fontWeight: "600", color: "#6250D5" }}>
                 Store
               </Text>
             ),
@@ -39,10 +39,10 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("@/assets/Logo/clients.png")} />
+              <Image source={require("@/assets/Logo/clients.png")} style={{tintColor:"#6250D5"}}/>
             ),
             tabBarLabel: () => (
-              <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
+              <Text style={{ fontSize: 12, fontWeight: "400", color: "#6250D5" }}>
                 Customers
               </Text>
             ),
@@ -53,10 +53,10 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("@/assets/Logo/booking.png")} />
+              <Image source={require("@/assets/Logo/booking.png")} style={{tintColor:"#6250D5"}}/>
             ),
             tabBarLabel: () => (
-              <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
+              <Text style={{ fontSize: 12, fontWeight: "400", color: "#6250D5" }}>
                 Clients
               </Text>
             ),
@@ -67,10 +67,10 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("@/assets/Logo/new.png")} />
+              <Image source={require("@/assets/Logo/new.png")} style={{tintColor:"#6250D5"}}/>
             ),
             tabBarLabel: () => (
-              <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
+              <Text style={{ fontSize: 12, fontWeight: "400", color: "#6250D5" }}>
                 Bookings
               </Text>
             ),
@@ -81,10 +81,10 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("@/assets/Logo/Icons.png")} />
+              <Image source={require("@/assets/Logo/Icons.png")}style={{tintColor:"#6250D5"}} />
             ),
             tabBarLabel: () => (
-              <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
+              <Text style={{ fontSize: 12, fontWeight: "400", color: "#6250D5" }}>
                 Packages
               </Text>
             ),
