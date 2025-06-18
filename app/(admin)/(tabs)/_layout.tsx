@@ -25,7 +25,7 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("../../assets/Logo/Frame.png")} />
+              <Image source={require("@/assets/Logo/Frame.png")} />
             ),
             tabBarLabel: () => (
               <Text style={{ fontSize: 12, fontWeight: "600", color: "white" }}>
@@ -39,7 +39,7 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("../../assets/Logo/clients.png")} />
+              <Image source={require("@/assets/Logo/clients.png")} />
             ),
             tabBarLabel: () => (
               <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
@@ -53,7 +53,7 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("../../assets/Logo/booking.png")} />
+              <Image source={require("@/assets/Logo/booking.png")} />
             ),
             tabBarLabel: () => (
               <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
@@ -67,7 +67,7 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("../../assets/Logo/new.png")} />
+              <Image source={require("@/assets/Logo/new.png")} />
             ),
             tabBarLabel: () => (
               <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
@@ -81,7 +81,7 @@ export default function _layout() {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Image source={require("../../assets/Logo/Icons.png")} />
+              <Image source={require("@/assets/Logo/Icons.png")} />
             ),
             tabBarLabel: () => (
               <Text style={{ fontSize: 12, fontWeight: "400", color: "white" }}>
