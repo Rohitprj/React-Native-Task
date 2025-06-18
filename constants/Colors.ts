@@ -23,4 +23,9 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+  STB:{
+    buttons:"#6250D5",
+    background:"#edeae4",
+    text:"#1E3A8A"
+  }
 };

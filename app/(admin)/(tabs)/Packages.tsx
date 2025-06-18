@@ -1,5 +1,8 @@
+import { Colors } from "@/constants/Colors";
 import axiosInstance from "@/utils/axiosInstance";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -126,7 +129,7 @@ const PackagesScreen: React.FC = () => {
     type: "SUBSCRIPTION",
     validity: "1 month",
   });
-
+const navigation = useNavigation<DrawerNavigationProp<any>>();
   const loadPackages = async () => {
     try {
       setLoading(true);
@@ -225,25 +228,29 @@ const PackagesScreen: React.FC = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          {/* <Entypo name="menu" size={26} color="white" /> */}
+        
+        <TouchableOpacity
+             onPress={() => navigation.openDrawer()}
+             style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+        >
+          <Feather name="menu" size={24} color="black" />
           <Text style={styles.headerTitle}>Packages</Text>
-        </View>
-        <Ionicons name="person-circle-outline" size={28} color="white" />
+        </TouchableOpacity>
+        <Ionicons name="person-circle-outline" size={28} color="black" />
       </View>
 
       {/* Search and New Button */}
       <View style={styles.searchRow}>
         <TextInput
           placeholder="Search"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={Colors.STB.buttons}
           style={styles.searchInput}
         />
         <TouchableOpacity
           style={styles.newButton}
           onPress={() => setIsModalVisible(true)}
         >
-          <Text style={{ ...styles.buttonText, color: "#1e40af" }}>+ New</Text>
+          <Text style={{ ...styles.buttonText, color: "white" }}>+ New</Text>
         </TouchableOpacity>
       </View>
 
@@ -398,7 +405,7 @@ const PackagesScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: Colors.STB.background,
     paddingHorizontal: 16,
     paddingTop: 30,
   },
@@ -428,7 +435,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginVertical: 12,
   },
   headerLeft: {
     flexDirection: "row",
@@ -438,7 +445,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
+    color: "black",
   },
   searchRow: {
     flexDirection: "row",
@@ -449,14 +456,15 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     width: "60%",
-    backgroundColor: "#1e293b",
     color: "#fff",
     borderRadius: 8,
     paddingHorizontal: 10,
     height: 40,
+    borderWidth: 1.5,
+    borderColor: Colors.STB.buttons,
   },
   newButton: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.STB.buttons,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -489,12 +497,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   packageName: {
-    color: "#fff",
+    color:Colors.STB.text,
     fontWeight: "bold",
     fontSize: 13,
   },
   packageDetail: {
-    color: "#cbd5e0",
+    color: "#94a3b8",
     fontSize: 12,
   },
   // --- Modal Styles ---

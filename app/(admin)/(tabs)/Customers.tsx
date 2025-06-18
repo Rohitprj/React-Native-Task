@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import axiosInstance from "@/utils/axiosInstance"; // Assuming this path is correctly configured in your Expo project
 import { AntDesign, Feather, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -519,10 +520,10 @@ const CustomersScreen = () => {
           onPress={() => navigation.openDrawer()}
           style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
         >
-          <Feather name="menu" size={24} color="white" />
+          <Feather name="menu" size={24} color="black" />
         <Text style={styles.headerTitle}>Customers</Text>
         </TouchableOpacity>
-        <Ionicons name="person-circle-outline" size={28} color="white" />
+        <Ionicons name="person-circle-outline" size={28} color="black" />
       </View>
 
       {/* Filters (in a horizontal ScrollView) */}
@@ -568,7 +569,7 @@ const CustomersScreen = () => {
       <View style={styles.searchRow}>
         <TextInput
           placeholder="Search by name or phone"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={Colors.STB.buttons}
           style={styles.searchInput}
           value={searchTerm}
           onChangeText={handleSearch} // This will now filter the displayed list
@@ -578,7 +579,7 @@ const CustomersScreen = () => {
             style={styles.newButton}
             onPress={() => setShowNewCustomerForm(true)}
           >
-            <Text style={{ ...styles.buttonText, color: "#1e40af" }}>
+            <Text style={{ ...styles.buttonText, color: "white" }}>
               + New
             </Text>
           </TouchableOpacity>
@@ -864,7 +865,7 @@ const CustomersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: Colors.STB.background,
     paddingHorizontal: 16,
     paddingTop: 30,
   },
@@ -894,7 +895,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    // marginBottom: 12,
     paddingVertical: 20,
   },
   headerLeft: {
@@ -905,7 +906,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
+    color: "black",
   },
   filterRow: {
     flexDirection: "row",
@@ -921,14 +922,16 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    backgroundColor: "#1e293b",
+    backgroundColor: Colors.STB.background,
     color: "#fff",
     borderRadius: 8,
     paddingHorizontal: 10,
     height: 40,
+    borderWidth: 1,
+    borderColor: Colors.STB.buttons,
   },
   newButton: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.STB.buttons,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -941,7 +944,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   iconButton: {
-    backgroundColor: "#1e40af",
+    backgroundColor: Colors.STB.buttons,
     padding: 10,
     borderRadius: 8,
   },
@@ -966,7 +969,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   customerName: {
-    color: "#fff",
+    color: "#1E3A8A",
     fontWeight: "bold",
     fontSize: 13,
   },
@@ -979,11 +982,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   customerPhone: {
-    color: "#cbd5e0",
+    color: "#94a3b8",
     fontSize: 12,
   },
   customerDate: {
-    color: "#cbd5e0",
+    color: "#94a3b8",
     fontSize: 12,
   },
   modalOverlay: {
@@ -1074,7 +1077,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   filterSelectBtn: {
-    backgroundColor: "#374151",
+    backgroundColor: Colors.STB.buttons,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -1089,7 +1092,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   todayCallbacksBtn: {
-    backgroundColor: "#1e40af",
+    backgroundColor: Colors.STB.buttons,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,

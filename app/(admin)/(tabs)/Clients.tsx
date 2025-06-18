@@ -1,4 +1,7 @@
-import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+import { Feather, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
@@ -24,7 +27,7 @@ const CustomersScreen = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+const navigation = useNavigation<DrawerNavigationProp<any>>();
   const fetchCustomers = async () => {
     setLoading(true);
     setError(null);
@@ -95,17 +98,23 @@ const CustomersScreen = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        {/* <View style={styles.headerLeft}>
+        </View> */}
+        <TouchableOpacity
+          onPress={() => navigation.openDrawer()}
+          style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+        >
+          <Feather name="menu" size={24} color="black" />
           <Text style={styles.headerTitle}>Client</Text>
-        </View>
-        <Ionicons name="person-circle-outline" size={28} color="white" />
+        </TouchableOpacity>
+        <Ionicons name="person-circle-outline" size={28} color="black" />
       </View>
 
       {/* Search and Refresh */}
       <View style={styles.searchRow}>
         <TextInput
           placeholder="Search by name or phone"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={Colors.STB.buttons}
           style={styles.searchInput}
           value={searchTerm}
           onChangeText={handleSearch}
@@ -154,7 +163,7 @@ const CustomersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: Colors.STB.background,
     paddingHorizontal: 16,
     paddingTop: 30,
   },
@@ -199,7 +208,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
+    color: "black",
   },
   searchRow: {
     flexDirection: "row",
@@ -210,14 +219,15 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     width: "70%",
-    backgroundColor: "#1e293b",
     color: "#fff",
     borderRadius: 8,
     paddingHorizontal: 10,
     height: 40,
+    borderWidth: 1,
+    borderColor: Colors.STB.buttons,
   },
   iconButton: {
-    backgroundColor: "#1e40af",
+    backgroundColor: Colors.STB.buttons,
     padding: 10,
     borderRadius: 8,
   },
@@ -241,17 +251,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   customerName: {
-    color: "#fff",
+    color:Colors.STB.text,
     fontWeight: "bold",
     fontSize: 13,
   },
   customerPhone: {
-    color: "#cbd5e0",
+    color: "#94a3b8",
     fontSize: 12,
     textAlign: "center",
   },
   customerDate: {
-    color: "#cbd5e0",
+    color: "#94a3b8",
     fontSize: 12,
     textAlign: "right",
   },
