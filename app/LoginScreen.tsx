@@ -72,11 +72,11 @@ const LoginScreen: React.FC = () => {
         const role = user.role?.toUpperCase();
 
         if (role === "ADMIN") {
-          router.replace("/(tabs)");
+          router.replace("/(admin)/(tabs)");
         } else if (role === "SUBADMIN") {
-          router.replace("/(subAdmin)");
+          router.replace("/(subAdminDrawer)/(subAdmin)/Bookings");
         } else if (role === "EMPLOYEE") {
-          router.replace("/(employee)/Bookings");
+          router.replace("/(adminDrawer)/(employee)/Bookings");
         } else {
           Alert.alert("Error", "Invalid role. Please contact support.");
         }

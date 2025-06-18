@@ -39,7 +39,7 @@ export default function RootLayout() {
       ) : userRole === "ADMIN" ? (
         <Stack.Screen name="(admin)" />
       ) : userRole === "SUBADMIN" ? (
-        <Stack.Screen name="(subAdmin)" />
+        <Stack.Screen name="(subAdminDrawer)" />
       ) : userRole === "EMPLOYEE" ? (
         <Stack.Screen name="(adminDrawer)" />
       ) : (
