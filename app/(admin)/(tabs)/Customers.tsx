@@ -1,8 +1,10 @@
 import { Colors } from "@/constants/Colors";
 import axiosInstance from "@/utils/axiosInstance"; // Assuming this path is correctly configured in your Expo project
+import { getUserData, removeUserData } from "@/utils/tokenStorage";
 import { AntDesign, Feather, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -279,7 +281,8 @@ const CustomersScreen = () => {
   const [showStagePicker, setShowStagePicker] = useState<boolean>(false);
   const [showSourcePicker, setShowSourcePicker] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-
+const [showLogout, setShowLogout] = useState(false);
+const [userEmail, setUserEmail] = useState<string>("");
   // New state for Mode of Payment picker visibility
   const [showPaymentModePicker, setShowPaymentModePicker] =
     useState<boolean>(false);
@@ -292,6 +295,11 @@ const CustomersScreen = () => {
   ];
 
   const navigation = useNavigation<DrawerNavigationProp<any>>();
+const router = useRouter();
+  const handleLogout = async () => {
+      await removeUserData();
+      router.replace("/LoginScreen");
+    };
   const mapCustomerDataToDisplay = (
     apiData: CustomerData[]
   ): DisplayCustomerItem[] => {
@@ -309,6 +317,8 @@ const CustomersScreen = () => {
       setLoading(true);
       setError(null);
       const apiData: CustomerData[] = await fetchCustomersApi();
+      const asyncUserData = await getUserData();
+            if (asyncUserData?.email) setUserEmail(asyncUserData.email);
       const mappedData = mapCustomerDataToDisplay(apiData);
       setCustomers(mappedData);
       setDisplayedCustomers(mappedData);
@@ -523,9 +533,26 @@ const CustomersScreen = () => {
           <Feather name="menu" size={24} color="black" />
         <Text style={styles.headerTitle}>Customers</Text>
         </TouchableOpacity>
-        <Ionicons name="person-circle-outline" size={28} color="black" />
+        <TouchableOpacity
+                  style={styles.headerIcons}
+                  onPress={() => setShowLogout(true)}
+                >
+                  <Ionicons name="person-circle-outline" size={26} color="black" />
+                </TouchableOpacity>
       </View>
-
+<Modal visible={showLogout} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalEmail}>{userEmail}</Text>
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowLogout(false)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       {/* Filters (in a horizontal ScrollView) */}
       <View style={{ marginBottom: 16 }}>
         <ScrollView
@@ -906,6 +933,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
+  },headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   filterRow: {
     flexDirection: "row",
@@ -1127,6 +1157,33 @@ const styles = StyleSheet.create({
   emptyListText: {
     color: "#94a3b8",
     fontSize: 16,
+  },modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalEmail: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 20,
+    color: "#333",
+  },
+  logoutButton: {
+    backgroundColor: "#ef4444",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  logoutButtonText: {
+    color: "white",
+    fontWeight: "600",
+  },
+  cancelText: {
+    color: "#555",
+    marginTop: 5,
   },
 });
 

@@ -1,12 +1,15 @@
 import { Colors } from "@/constants/Colors";
+import { getUserData, removeUserData } from "@/utils/tokenStorage";
 import { Feather, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -27,7 +30,18 @@ const CustomersScreen = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-const navigation = useNavigation<DrawerNavigationProp<any>>();
+
+  const [showLogout, setShowLogout] = useState(false);
+  const router = useRouter();
+  const handleLogout = async () => {
+    await removeUserData();
+    router.replace("/LoginScreen");
+  };
+
+  const [userEmail, setUserEmail] = useState<string>("");
+
+
+  const navigation = useNavigation<DrawerNavigationProp<any>>();
   const fetchCustomers = async () => {
     setLoading(true);
     setError(null);
@@ -36,6 +50,8 @@ const navigation = useNavigation<DrawerNavigationProp<any>>();
       const response = await axios.get(
         "https://striketheball.in/api/customer/clients"
       );
+      const asyncUserData = await getUserData();
+      if (asyncUserData?.email) setUserEmail(asyncUserData.email);
       if (response.data?.valid && Array.isArray(response.data?.customers)) {
         setCustomersData(response.data.customers);
         setFilteredData(response.data.customers);
@@ -52,7 +68,7 @@ const navigation = useNavigation<DrawerNavigationProp<any>>();
 
       setError(
         err.message ||
-          "Failed to load customers. Please check your network connection."
+        "Failed to load customers. Please check your network connection."
       );
     } finally {
       setLoading(false);
@@ -105,9 +121,27 @@ const navigation = useNavigation<DrawerNavigationProp<any>>();
           <Feather name="menu" size={24} color="black" />
           <Text style={styles.headerTitle}>Client</Text>
         </TouchableOpacity>
-        <Ionicons name="person-circle-outline" size={28} color="black" />
+        <TouchableOpacity
+          style={styles.headerIcons}
+          onPress={() => setShowLogout(true)}
+        >
+          <Ionicons name="person-circle-outline" size={26} color="black" />
+        </TouchableOpacity>
       </View>
 
+      <Modal visible={showLogout} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalEmail}>{userEmail}</Text>
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowLogout(false)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       {/* Search and Refresh */}
       <View style={styles.searchRow}>
         <TextInput
@@ -249,7 +283,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   customerName: {
-    color:Colors.STB.text,
+    color: Colors.STB.text,
     fontWeight: "bold",
     fontSize: 13,
   },
@@ -272,6 +306,42 @@ const styles = StyleSheet.create({
   emptyListText: {
     color: "#94a3b8",
     fontSize: 16,
+  }, modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalEmail: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 20,
+    color: "#333",
+  },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  logoutButton: {
+    backgroundColor: "#ef4444",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  logoutButtonText: {
+    color: "white",
+    fontWeight: "600",
+  },
+  cancelText: {
+    color: "#555",
+    marginTop: 5,
+  }, modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
