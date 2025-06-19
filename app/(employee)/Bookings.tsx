@@ -7,15 +7,14 @@ import {
   fetchBookingsByPaidStatusApi,
   fetchBookingsByStatusApi,
   fetchBookingsByStoreApi,
-} from "@/utils/bookingApi";
+} from "@/utils/bookingApiEmp";
 import {
   AdminDirectBookingPayload,
   BookingData,
   DisplayBookingItem,
   NewBookingPayload,
 } from "@/utils/types/bookingTypes";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker"; // Import DatePicker
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
@@ -520,7 +519,7 @@ const BookingsScreen = () => {
         contentContainerStyle={styles.filterRow}
       >
         {/* Store Filter */}
-        <View style={styles.filterPickerContainer}>
+        {/* <View style={styles.filterPickerContainer}>
           <Picker
             selectedValue={selectedFilterStoreId}
             onValueChange={(itemValue: number) =>
@@ -534,7 +533,7 @@ const BookingsScreen = () => {
               <Picker.Item key={store.id} label={store.name} value={store.id} />
             ))}
           </Picker>
-        </View>
+        </View> */}
 
         {/* Status Filter */}
         <View style={styles.filterPickerContainer}>
@@ -553,7 +552,7 @@ const BookingsScreen = () => {
         </View>
 
         {/* Paid Status Filter */}
-        <View style={styles.filterPickerContainer}>
+        {/* <View style={styles.filterPickerContainer}>
           <Picker
             selectedValue={selectedFilterPaidStatus}
             onValueChange={(itemValue: string) =>
@@ -566,10 +565,10 @@ const BookingsScreen = () => {
             <Picker.Item label="Unpaid" value="0" />
             <Picker.Item label="Paid" value="1" />
           </Picker>
-        </View>
+        </View> */}
 
         {/* Customer Type Filter */}
-        <View style={styles.filterPickerContainer}>
+        {/* <View style={styles.filterPickerContainer}>
           <Picker
             selectedValue={selectedFilterCustomerType}
             onValueChange={(itemValue: string) =>
@@ -584,10 +583,10 @@ const BookingsScreen = () => {
             <Picker.Item label="WHATSAPP" value="2" />
             <Picker.Item label="ENQUIRY" value="3" />
           </Picker>
-        </View>
+        </View> */}
 
         {/* Date Picker Filter */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.datePickerButton}
           onPress={() => setShowDatePicker(true)}
         >
@@ -597,9 +596,9 @@ const BookingsScreen = () => {
               : "Select Date"}
           </Text>
           <AntDesign name="calendar" size={16} color="#fff" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        {showDatePicker && (
+        {/* {showDatePicker && (
           <DateTimePicker
             testID="dateTimePicker"
             value={selectedFilterDate || new Date()}
@@ -608,7 +607,7 @@ const BookingsScreen = () => {
             onChange={handleFilterDateChange}
             maximumDate={new Date()} // Prevent picking future dates if desired
           />
-        )}
+        )} */}
       </ScrollView>
 
       {/* Search and Action Buttons */}
@@ -618,12 +617,14 @@ const BookingsScreen = () => {
           placeholderTextColor={Colors.STB.buttons}
           style={styles.searchInput}
         />
-        <TouchableOpacity
+
+        {/* Existing bookings */}
+        {/* <TouchableOpacity
           style={styles.smallButton}
           onPress={() => setShowCustomerBookingModal(true)}
         >
           <Text style={styles.buttonText}>Existing</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={styles.smallButton}
           onPress={() => setShowNewDirectBookingForm(true)}
@@ -711,7 +712,7 @@ const BookingsScreen = () => {
             <View style={{ flexDirection:"row" ,justifyContent:"space-between"}}>
             <Text style={{ fontWeight: "bold", marginBottom: 5 ,alignSelf:"center" }}>OVERS PLAYED</Text>
             <TextInput
-              style={[styles.formInput, { marginBottom: 10 }]}
+              style={[styles.formInput, { marginBottom: 10, width: "60%" }]}
               placeholder="Enter Overs Played"
               placeholderTextColor="#94a3b8"
             // value={} // Bind to state if you want to save this
@@ -1286,11 +1287,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   formInput: {
-    color: "#fff",
+    color: "#000",
     borderRadius: 8,
     paddingHorizontal: 15,
     height: 40,
-    width: "50%",
+    width: "100%",
     marginBottom: 15,
     fontSize: 12,
     borderWidth: 1,

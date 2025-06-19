@@ -672,7 +672,7 @@ const BookingsScreen = () => {
             <View style={{ flexDirection:"row" ,justifyContent:"space-between"}}>
             <Text style={{ fontWeight: "bold", marginBottom: 5 ,alignSelf:"center" }}>OVERS PLAYED</Text>
             <TextInput
-              style={[styles.formInput, { marginBottom: 10 }]}
+              style={[styles.formInput, { marginBottom: 10,width: "60%" }]}
               placeholder="Enter Overs Played"
               placeholderTextColor="#94a3b8"
             // value={} // Bind to state if you want to save this
@@ -1247,11 +1247,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   formInput: {
-    color: "#fff",
+    color: "#000",
     borderRadius: 8,
     paddingHorizontal: 15,
     height: 40,
-    width: "50%",
+    width: "100%",
     marginBottom: 15,
     fontSize: 12,
     borderWidth: 1,
