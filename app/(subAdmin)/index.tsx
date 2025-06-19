@@ -1,91 +1,142 @@
-import { removeUserData } from "@/utils/tokenStorage";
-import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
-import axios from "axios";
+import ThreeButtons from "@/components/ThreeButtons";
+import { Colors } from "@/constants/Colors";
+import axiosInstance from "@/utils/axiosInstance";
+import { getUserData, removeUserData } from "@/utils/tokenStorage";
+import { Ionicons } from "@expo/vector-icons";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Button,
+  Dimensions,
   FlatList,
+  Image,
+  ListRenderItem,
+  Modal,
+  Platform,
+  StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 
-type Customer = {
+const { width } = Dimensions.get("window");
+const FULL_WIDTH_CARD_WIDTH = width - 40;
+
+interface StoreApiItem {
   id: number;
   name: string;
-  phone: string;
-  createdAt: string;
-};
+  image?: string;
+}
 
-const CustomersScreen = () => {
-  const [customersData, setCustomersData] = useState<Customer[]>([]);
-  const [filteredData, setFilteredData] = useState<Customer[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showLogout, setShowLogout] = useState(false);
+interface StoreListApiResponse {
+  valid: boolean;
+  stores: StoreApiItem[];
+  message?: string;
+}
 
+const OverviewScreen: React.FC = () => {
+  const navigation = useNavigation<DrawerNavigationProp<any>>();
   const router = useRouter();
+
+  const [showLogout, setShowLogout] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [stores, setStores] = useState<StoreApiItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [headerStoreName, setHeaderStoreName] = useState("Loading Stores...");
 
   const handleLogout = async () => {
     await removeUserData();
     router.replace("/LoginScreen");
   };
-  const fetchCustomers = async () => {
+
+  const fetchStores = async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const response = await axios.get(
-        "https://striketheball.in/api/customer/clients"
-      );
-      if (response.data?.valid && Array.isArray(response.data?.customers)) {
-        setCustomersData(response.data.customers);
-        setFilteredData(response.data.customers);
-        setSearchTerm("");
+      const response = await axiosInstance.get<StoreListApiResponse>("/admin/store");
+      const asyncUserData = await getUserData();
+      if (asyncUserData?.email) setUserEmail(asyncUserData.email);
+
+      if (response.data?.valid && Array.isArray(response.data?.stores)) {
+        const imageMap: Record<number, string> = {
+          1: "https://striketheball.in/Public/gallery/110.jpg",
+          2: "https://striketheball.in/Public/gallery/93.jpg",
+          3: "https://striketheball.in/Public/gallery/10A.jpg",
+          4: "https://striketheball.in/Public/gallery/sector57.jpeg",
+          5: "https://striketheball.in/Public/gallery/1072.jpg",
+          6: "https://striketheball.in/Public/gallery/sec107.jpeg",
+        };
+
+        const enhancedStores = response.data.stores.map((store) => ({
+          ...store,
+          image:
+            imageMap[store.id] ??
+            `https://placehold.co/360x180/ADD8E6/000000?text=${encodeURIComponent(store.name)}`,
+        }));
+
+        setStores(enhancedStores);
+        setHeaderStoreName(enhancedStores.length > 0 ? "Stores" : "No Stores");
       } else {
-        console.warn(
-          "API response did not contain valid 'customers' array:",
-          response.data
-        );
-        setError("Invalid data received from server. Please try again.");
+        setError("Invalid store data received from server.");
+        setHeaderStoreName("Error");
       }
     } catch (err: any) {
-      console.error("Error fetching customers:", err);
-
-      setError(
-        err.message ||
-          "Failed to load customers. Please check your network connection."
-      );
+      setError(err.message || "Failed to load stores.");
+      setHeaderStoreName("Error");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCustomers();
+    fetchStores();
   }, []);
 
-  const handleSearch = (text: string) => {
-    setSearchTerm(text);
-    const lowercased = text.toLowerCase();
-    const filtered = customersData.filter(
-      (item) =>
-        item.name?.toLowerCase().includes(lowercased) ||
-        item.phone?.includes(lowercased)
-    );
-    setFilteredData(filtered);
+  const handleStoreCardPress = (storeId: number, storeName: string) => {
+    router.push({ pathname: "/Bookings", params: { storeId, storeName } });
   };
+
+  const renderStoreItem: ListRenderItem<StoreApiItem> = ({ item }) => (
+    <TouchableOpacity
+      style={styles.storeCard}
+      onPress={() => handleStoreCardPress(item.id, item.name)}
+      activeOpacity={0.8}
+    >
+      <Image
+        source={{ uri: item.image }}
+        style={styles.storeImage}
+        onError={(e) => console.log("Image load error:", e.nativeEvent.error)}
+      />
+      <View style={styles.storeInfo}>
+        <Text style={styles.storeName} numberOfLines={1}>
+          {item.name}
+        </Text>
+        <View style={styles.ratingContainer}>
+          <Text style={styles.ratingText}>4.8</Text>
+          <Ionicons name="star" size={12} color="#FFD700" />
+        </View>
+      </View>
+      <Text style={styles.storeLocation} numberOfLines={1}>
+        Strike The Ball Outdoor Net, near Six Flag 2.0, . . .
+      </Text>
+      <TouchableOpacity
+        style={styles.bookingsButton}
+        onPress={() => handleStoreCardPress(item.id, item.name)}
+      >
+        <Text style={styles.bookingsButtonText}>BOOKINGS</Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
 
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Loading customers...</Text>
+        <ActivityIndicator size="large" color="#8358EB" />
+        <Text style={styles.loadingText}>Loading Stores...</Text>
       </View>
     );
   }
@@ -94,7 +145,7 @@ const CustomersScreen = () => {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={fetchCustomers}>
+        <TouchableOpacity style={styles.retryButton} onPress={fetchStores}>
           <Text style={styles.buttonText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -103,72 +154,63 @@ const CustomersScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Client</Text>
-        </View>
-        <TouchableOpacity onPress={() => setShowLogout(!showLogout)}>
-          <Ionicons name="person-circle-outline" size={28} color="white" />
-        </TouchableOpacity>
-      </View>
-      {showLogout && <Button title="Logout" onPress={handleLogout} />}
-      {/* Search and Refresh */}
-      <View style={styles.searchRow}>
-        <TextInput
-          placeholder="Search by name or phone"
-          placeholderTextColor="#94a3b8"
-          style={styles.searchInput}
-          value={searchTerm}
-          onChangeText={handleSearch}
-        />
-        <TouchableOpacity style={styles.iconButton} onPress={fetchCustomers}>
-          <SimpleLineIcons name="refresh" size={20} color="white" />
+        {/* <TouchableOpacity
+          onPress={() => navigation.openDrawer()}
+          style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+        >
+          <Feather name="menu" size={24} color="black" /> */}
+          <Text style={styles.headerText}>{headerStoreName}</Text>
+        {/* </TouchableOpacity> */}
+        <TouchableOpacity
+          style={styles.headerIcons}
+          onPress={() => setShowLogout(true)}
+        >
+          <Ionicons name="person-circle-outline" size={26} color="black" />
         </TouchableOpacity>
       </View>
 
-      {/* Table Headers */}
-      <View style={styles.tableHeader}>
-        <Text style={[styles.columnHeader, { flex: 2 }]}>NAME</Text>
-        <Text style={[styles.columnHeader, { flex: 1 }]}>PHONE</Text>
-        <Text style={[styles.columnHeader, { flex: 1 }]}>CREATED ON DATE</Text>
-      </View>
-
-      {/* List */}
-      <FlatList
-        data={filteredData}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View style={styles.row}>
-            <Text style={[styles.customerName, { flex: 2 }]}>{item.name}</Text>
-            <Text style={[styles.customerPhone, { flex: 1 }]}>
-              {item.phone}
-            </Text>
-            <Text style={[styles.customerDate, { flex: 1 }]}>
-              {new Date(item.createdAt).toLocaleDateString()}
-            </Text>
+      <Modal visible={showLogout} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalEmail}>{userEmail}</Text>
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowLogout(false)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
           </View>
-        )}
+        </View>
+      </Modal>
+
+      <ThreeButtons />
+
+      <FlatList
+        data={stores}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderStoreItem}
+        contentContainerStyle={styles.storeListContent}
+        showsVerticalScrollIndicator={false}
         ListEmptyComponent={() =>
-          !loading &&
-          !error && (
+          !loading && !error && stores.length === 0 ? (
             <View style={styles.emptyListContainer}>
-              <Text style={styles.emptyListText}>No customers found.</Text>
+              <Text style={styles.emptyListText}>No stores found.</Text>
             </View>
-          )
+          ) : null
         }
       />
     </View>
   );
 };
+export default OverviewScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
-    paddingHorizontal: 16,
-    paddingTop: 30,
+    backgroundColor: Colors.STB.background,
   },
   centerContent: {
     justifyContent: "center",
@@ -198,77 +240,92 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   header: {
+    paddingHorizontal: 20,
+    paddingTop:
+      Platform.OS === "android" ? (StatusBar.currentHeight ?? 0) + 10 : 50,
+    // paddingBottom: 15,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    backgroundColor: "#edeae4",
   },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  headerTitle: {
+  headerText: {
+    color: "black",
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  searchRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 12,
-    justifyContent: "space-between",
-  },
-  searchInput: {
-    width: "70%",
-    backgroundColor: "#1e293b",
-    color: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    height: 40,
-  },
-  iconButton: {
-    backgroundColor: "#1e40af",
-    padding: 10,
-    borderRadius: 8,
-  },
-  tableHeader: {
-    flexDirection: "row",
-    paddingBottom: 8,
-    paddingTop: 12,
-    borderBottomColor: "#334155",
-    borderBottomWidth: 1,
-    marginBottom: 6,
-  },
-  columnHeader: {
-    color: "#94a3b8",
-    fontSize: 12,
     fontWeight: "600",
   },
-  row: {
+  headerIcons: {
     flexDirection: "row",
-    paddingVertical: 18,
-    borderBottomColor: "#1e293b",
-    borderBottomWidth: 1,
+    alignItems: "center",
   },
-  customerName: {
-    color: "#fff",
+  storeListContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  storeCard: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    overflow: "hidden",
+    marginBottom: 20,
+    width: FULL_WIDTH_CARD_WIDTH,
+    alignSelf: "center",
+  },
+  storeImage: {
+    width: "100%",
+    height: 180,
+    resizeMode: "cover",
+  },
+  storeInfo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingTop: 10,
+  },
+  storeName: {
+    color: "black",
+    fontSize: 18,
     fontWeight: "bold",
+    flex: 1,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#0C2647",
+    borderRadius: 5,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    gap: 5,
+  },
+  ratingText: {
+    color: "#FFD700",
+    fontSize: 12,
+    marginLeft: 4,
+    fontWeight: "bold",
+  },
+  storeLocation: {
+    color: "lightgrey",
     fontSize: 13,
+    paddingHorizontal: 15,
+    marginTop: 5,
+    marginBottom: 10,
   },
-  customerPhone: {
-    color: "#cbd5e0",
-    fontSize: 12,
-    textAlign: "center",
+  bookingsButton: {
+    backgroundColor: "#ffffff",
+    paddingVertical: 12,
+    marginHorizontal: 15,
+    marginBottom: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    borderColor: "#35A494",
+    borderWidth: 2,
   },
-  customerDate: {
-    color: "#cbd5e0",
-    fontSize: 12,
-    textAlign: "right",
+  bookingsButtonText: {
+    color: "#35A494",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   emptyListContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 50,
@@ -276,7 +333,38 @@ const styles = StyleSheet.create({
   emptyListText: {
     color: "#94a3b8",
     fontSize: 16,
+  },modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalEmail: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 20,
+    color: "#333",
+  },
+  logoutButton: {
+    backgroundColor: "#ef4444",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  logoutButtonText: {
+    color: "white",
+    fontWeight: "600",
+  },
+  cancelText: {
+    color: "#555",
+    marginTop: 5,
   },
 });
-
-export default CustomersScreen;
