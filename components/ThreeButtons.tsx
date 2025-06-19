@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-// import Icon from "react-native-vector-icons/Feather";
+
 
 const ThreeButtons = () => {
   return (
