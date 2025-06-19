@@ -5,9 +5,7 @@ import {
   fetchBookingsByCustomerTypeApi,
   fetchBookingsByDateApi,
   fetchBookingsByPaidStatusApi,
-  fetchBookingsByStatusApi, // Keep this for default "all bookings"
-
-  // Import new API functions
+  fetchBookingsByStatusApi,
   fetchBookingsByStoreApi,
 } from "@/utils/bookingApi";
 import {
@@ -23,9 +21,9 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Button,
   Dimensions,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -37,15 +35,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Icon from "react-native-vector-icons/Feather";
 
 // Assuming you have these API utility functions defined, e.g., in a new `dataFetchApi.ts`
+import { Colors } from "@/constants/Colors";
 import {
   fetchCustomersApi,
   fetchPackagesApi,
   fetchStoresApi,
 } from "@/utils/bookingApi"; // Ensure these return { customers: [] } etc.
-import { removeUserData } from "@/utils/tokenStorage";
+import { getUserData, removeUserData } from "@/utils/tokenStorage";
 import { useRouter } from "expo-router";
 
 // Define types for your API responses (replace with your actual types if different)
@@ -72,13 +70,7 @@ const BookingsScreen = () => {
   const [bookings, setBookings] = useState<DisplayBookingItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [showLogout, setShowLogout] = useState(false);
-  const router = useRouter();
 
-  const handleLogout = async () => {
-    await removeUserData();
-    router.replace("/LoginScreen");
-  };
   // State for dropdown data (stores, customers, packages)
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
@@ -114,6 +106,8 @@ const BookingsScreen = () => {
       overs: null,
     });
   const [isSubmittingDirect, setIsSubmittingDirect] = useState<boolean>(false);
+  const [showBookingDetailsModal, setShowBookingDetailsModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<DisplayBookingItem | null>(null);
 
   // State for the "Existing Booking" (Customer ID based) modal
   const [showCustomerBookingModal, setShowCustomerBookingModal] =
@@ -129,7 +123,15 @@ const BookingsScreen = () => {
     });
   const [isSubmittingCustomer, setIsSubmittingCustomer] =
     useState<boolean>(false);
+    const [userEmail, setUserEmail] = useState<string>("");
 
+    const [showLogout, setShowLogout] = useState(false);
+
+    const router = useRouter();
+  const handleLogout = async () => {
+      await removeUserData();
+      router.replace("/LoginScreen");
+    };
   // --- NEW CENTRALIZED BOOKING LOADER FOR FILTERS ---
   const loadBookingsFiltered = async (
     filterType: "all" | "store" | "status" | "paid" | "customerType" | "date",
@@ -138,6 +140,8 @@ const BookingsScreen = () => {
     try {
       setLoading(true);
       setError(null);
+      const asyncUserData = await getUserData();
+            if (asyncUserData?.email) setUserEmail(asyncUserData.email);
       let apiData: BookingData[] = [];
 
       switch (filterType) {
@@ -476,14 +480,39 @@ const BookingsScreen = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        {/* <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Bookings</Text>
-        </View>
-        <TouchableOpacity onPress={() => setShowLogout(!showLogout)}>
-          <Ionicons name="person-circle-outline" size={28} color="white" />
-        </TouchableOpacity>
+        </View> */}
+        {/* <TouchableOpacity
+          onPress={() => navigation.openDrawer()}
+          style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+        >
+          <Feather name="menu" size={24} color="black" />
+        </TouchableOpacity> */}
+          <Text style={styles.headerTitle}>Bookings</Text>
+        {/* <Ionicons name="person-circle-outline" size={28} color="black" /> */}
+        <TouchableOpacity
+                  style={styles.headerIcons}
+                  onPress={() => setShowLogout(true)}
+                >
+                  <Ionicons name="person-circle-outline" size={26} color="black" />
+                </TouchableOpacity>
       </View>
-      {showLogout && <Button title="Logout" onPress={handleLogout} />}
+
+<Modal visible={showLogout} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalEmail}>{userEmail}</Text>
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowLogout(false)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Filters (Replaced FlatList with direct Pickers) */}
       <ScrollView
         horizontal
@@ -586,7 +615,7 @@ const BookingsScreen = () => {
       <View style={styles.searchRow}>
         <TextInput
           placeholder="Search"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={Colors.STB.buttons}
           style={styles.searchInput}
         />
         <TouchableOpacity
@@ -629,12 +658,84 @@ const BookingsScreen = () => {
               </Text>
             </View>
             <Text style={styles.storeText}>{item.store}</Text>
-            <TouchableOpacity style={{ flex: 0.5, alignItems: "flex-end" }}>
-              <Icon name="edit-3" size={20} color="#3b82f6" />
+            <TouchableOpacity style={{ flex: 0.5, alignItems: "flex-end" }}
+              onPress={() => {
+                setSelectedBooking(item);
+                setShowBookingDetailsModal(true);
+              }}>
+              <Image source={require("@/assets/Logo/link.png")} />
             </TouchableOpacity>
           </View>
         )}
       />
+      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showBookingDetailsModal}
+        onRequestClose={() => setShowBookingDetailsModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.formContainer, { alignItems: "stretch" }]}>
+            <Text style={[styles.formTitle, { marginBottom: 10 }]}>Bookings Details</Text>
+            {selectedBooking && (
+              <>
+                <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
+                  Customer: <Text style={{ fontWeight: "normal" }}>{selectedBooking.name}</Text>
+                </Text>
+                <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
+                  Payment Status: <Text style={{ fontWeight: "normal" }}>{selectedBooking.status}</Text>
+                </Text>
+                <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
+                  Store: <Text style={{ fontWeight: "normal" }}>{selectedBooking.store}</Text>
+                </Text>
+                {/* Add more booking details here as needed */}
+              </>
+            )}
+
+            {/* Example: Mark Payment As Done button */}
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#17A34A",
+                borderRadius: 8,
+                paddingVertical: 12,
+                alignItems: "center",
+                marginVertical: 10,
+              }}
+            // onPress={handleMarkPaymentAsDone} // Implement this if needed
+            >
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>Mark Payment As Done</Text>
+            </TouchableOpacity>
+
+            {/* Example: Overs Played input */}
+            <View style={{ flexDirection:"row" ,justifyContent:"space-between"}}>
+            <Text style={{ fontWeight: "bold", marginBottom: 5 ,alignSelf:"center" }}>OVERS PLAYED</Text>
+            <TextInput
+              style={[styles.formInput, { marginBottom: 10 }]}
+              placeholder="Enter Overs Played"
+              placeholderTextColor="#94a3b8"
+            // value={} // Bind to state if you want to save this
+            // onChangeText={} // Bind to state if you want to save this
+            />
+            </View>
+
+            <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 10 }}>
+              <TouchableOpacity
+                style={[styles.cancelButton, { flex: 1 }]}
+                onPress={() => setShowBookingDetailsModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Close</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitButton, { flex: 1 }]}
+              // onPress={handleSubmitOversPlayed} // Implement this if needed
+              >
+                <Text style={styles.buttonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* NEW "+ New" (Direct Admin Booking) Modal (unchanged from your original) */}
       <Modal
@@ -662,7 +763,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     newDirectBookingData.bookingType === "Package" &&
-                      styles.typeSelectorButtonActive,
+                    styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleNewDirectBookingFormChange("bookingType", "Package")
@@ -672,7 +773,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       newDirectBookingData.bookingType === "Package" &&
-                        styles.typeSelectorTextActive,
+                      styles.typeSelectorTextActive,
                     ]}
                   >
                     Package
@@ -682,7 +783,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     newDirectBookingData.bookingType === "Custom" &&
-                      styles.typeSelectorButtonActive,
+                    styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleNewDirectBookingFormChange("bookingType", "Custom")
@@ -692,7 +793,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       newDirectBookingData.bookingType === "Custom" &&
-                        styles.typeSelectorTextActive,
+                      styles.typeSelectorTextActive,
                     ]}
                   >
                     Custom
@@ -873,7 +974,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     customerBookingData.bookingType === "Package" &&
-                      styles.typeSelectorButtonActive,
+                    styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleCustomerBookingFormChange("bookingType", "Package")
@@ -883,7 +984,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       customerBookingData.bookingType === "Package" &&
-                        styles.typeSelectorTextActive,
+                      styles.typeSelectorTextActive,
                     ]}
                   >
                     Package
@@ -893,7 +994,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     customerBookingData.bookingType === "Custom" &&
-                      styles.typeSelectorButtonActive,
+                    styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleCustomerBookingFormChange("bookingType", "Custom")
@@ -903,7 +1004,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       customerBookingData.bookingType === "Custom" &&
-                        styles.typeSelectorTextActive,
+                      styles.typeSelectorTextActive,
                     ]}
                   >
                     Custom
@@ -1042,7 +1143,7 @@ const BookingsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: Colors.STB.background,
     paddingHorizontal: 16,
     paddingTop: StatusBar.currentHeight || 30,
   },
@@ -1072,7 +1173,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 0,
+    marginVertical: 10,
   },
   headerLeft: {
     flexDirection: "row",
@@ -1082,7 +1183,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
+    color: "black",
   },
   searchRow: {
     flexDirection: "row",
@@ -1093,20 +1194,22 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    backgroundColor: "#1e293b",
+    // backgroundColor: "#1e293b",
     color: "#fff",
     borderRadius: 8,
     paddingHorizontal: 10,
     height: 40,
+    borderWidth: 1.5,
+    borderColor: Colors.STB.buttons,
   },
   smallButton: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.STB.buttons,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
   },
   buttonText: {
-    color: "#0f172a",
+    color: "#fff",
     fontSize: 13,
     fontWeight: "600",
   },
@@ -1132,7 +1235,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   customerName: {
-    color: "#fff",
+    color: Colors.STB.text,
     fontWeight: "bold",
     fontSize: 14,
   },
@@ -1145,7 +1248,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   storeText: {
-    color: "#cbd5e0",
+    color: "#94a3b8",
     fontSize: 12,
     flex: 1,
     marginHorizontal: 5,
@@ -1163,7 +1266,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   formContainer: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
     width: modalCalculatedWidth,
@@ -1172,7 +1275,7 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#fff",
+    color: "black",
     marginBottom: 20,
     textAlign: "center",
   },
@@ -1183,15 +1286,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   formInput: {
-    backgroundColor: "#0f172a",
     color: "#fff",
     borderRadius: 8,
     paddingHorizontal: 15,
-    height: 50,
+    height: 40,
+    width: "50%",
     marginBottom: 15,
-    fontSize: 16,
+    fontSize: 12,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "lightgrey",
   },
   formActions: {
     flexDirection: "column",
@@ -1208,15 +1311,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#60a5fa",
   },
   cancelButton: {
-    backgroundColor: "transparent",
-    paddingVertical: 15,
+    backgroundColor: "#F44043",
+    paddingVertical: 10,
     borderRadius: 8,
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#94a3b8",
   },
   cancelButtonText: {
-    color: "#94a3b8",
+    color: "white",
     fontWeight: "600",
     fontSize: 16,
   },
@@ -1269,18 +1370,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 10,
     bottom: 8,
-    // Add some padding or margin if needed
   },
   filterPickerContainer: {
-    backgroundColor: "#374151", // Darker background for filters
+    backgroundColor: Colors.STB.buttons,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#4a5568", // Slightly lighter border
     overflow: "hidden",
-    height: 40, // Height for filter pickers
+    height: 40,
     justifyContent: "center",
-    minWidth: 160, // Minimum width for each picker
-    marginRight: 10, // Spacing between pickers
+    minWidth: 160,
+    marginRight: 10,
     flexShrink: 1,
   },
   filterPickerStyle: {
@@ -1294,7 +1392,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   datePickerButton: {
-    backgroundColor: "#374151",
+    backgroundColor: Colors.STB.buttons,
     borderRadius: 8,
     paddingHorizontal: 12,
     justifyContent: "center",
@@ -1309,20 +1407,38 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalEmail: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 20,
+    color: "#333",
+  },
+  logoutButton: {
+    backgroundColor: "#ef4444",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  logoutButtonText: {
+    color: "white",
+    fontWeight: "600",
+  },
+  cancelText: {
+    color: "#555",
+    marginTop: 5,
+  },
 });
 
 export default BookingsScreen;
 
-{
-  /* <View>
-        <Picker
-          style={{ ...styles.filterPickerStyle, backgroundColor: "red" }}
-          itemStyle={styles.filterPickerItemStyle}
-        >
-          <Picker.Item label="All Stores" value={0} />
-          {[{ id: 1, name: "rohit" }].map((store) => (
-            <Picker.Item key={store.id} label={store.name} value={store.id} />
-          ))}
-        </Picker>
-      </View> */
-}
