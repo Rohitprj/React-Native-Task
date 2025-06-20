@@ -133,6 +133,7 @@ const BookingsScreen = () => {
 
   console.log("Data1", storeId);
   console.log("Data2", storeName);
+
   // --- NEW CENTRALIZED BOOKING LOADER FOR FILTERS ---
   const loadBookingsFiltered = async (
     filterType: "all" | "store" | "status" | "paid" | "customerType" | "date",
