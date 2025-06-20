@@ -677,6 +677,7 @@ const styles = StyleSheet.create({
   storeListContent: {
     paddingHorizontal: 20,
     paddingBottom: 20,
+    marginTop: 20,
   },
   storeCard: {
     backgroundColor: "white",
