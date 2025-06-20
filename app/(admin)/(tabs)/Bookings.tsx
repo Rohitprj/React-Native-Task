@@ -5,72 +5,7 @@ import {
   fetchBookingsByCustomerTypeApi,
   fetchBookingsByDateApi,
   fetchBookingsByPaidStatusApi,
-  fetchBookingsByStatusApi, // Keep this for default "all bookings"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Import new API functions
+  fetchBookingsByStatusApi,
   fetchBookingsByStoreApi,
 } from "@/utils/bookingApi";
 import {
@@ -110,6 +45,7 @@ import {
 } from "@/utils/bookingApi"; // Ensure these return { customers: [] } etc.
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
+import { useLocalSearchParams } from "expo-router";
 
 // Define types for your API responses (replace with your actual types if different)
 interface Customer {
@@ -172,7 +108,8 @@ const BookingsScreen = () => {
     });
   const [isSubmittingDirect, setIsSubmittingDirect] = useState<boolean>(false);
   const [showBookingDetailsModal, setShowBookingDetailsModal] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<DisplayBookingItem | null>(null);
+  const [selectedBooking, setSelectedBooking] =
+    useState<DisplayBookingItem | null>(null);
 
   // State for the "Existing Booking" (Customer ID based) modal
   const [showCustomerBookingModal, setShowCustomerBookingModal] =
@@ -189,6 +126,13 @@ const BookingsScreen = () => {
   const [isSubmittingCustomer, setIsSubmittingCustomer] =
     useState<boolean>(false);
   const navigation = useNavigation<DrawerNavigationProp<any>>();
+
+  const params = useLocalSearchParams();
+  // const storeIdFromParams = params.storeId ? parseInt(params.storeId, 10) : 0;
+  const { storeId, storeName } = params;
+
+  console.log("Data1", storeId);
+  console.log("Data2", storeName);
   // --- NEW CENTRALIZED BOOKING LOADER FOR FILTERS ---
   const loadBookingsFiltered = async (
     filterType: "all" | "store" | "status" | "paid" | "customerType" | "date",
@@ -693,17 +637,19 @@ const BookingsScreen = () => {
               </Text>
             </View>
             <Text style={styles.storeText}>{item.store}</Text>
-            <TouchableOpacity style={{ flex: 0.5, alignItems: "flex-end" }}
+            <TouchableOpacity
+              style={{ flex: 0.5, alignItems: "flex-end" }}
               onPress={() => {
                 setSelectedBooking(item);
                 setShowBookingDetailsModal(true);
-              }}>
+              }}
+            >
               <Image source={require("@/assets/Logo/link.png")} />
             </TouchableOpacity>
           </View>
         )}
       />
-      
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -712,17 +658,28 @@ const BookingsScreen = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.formContainer, { alignItems: "stretch" }]}>
-            <Text style={[styles.formTitle, { marginBottom: 10 }]}>Bookings Details</Text>
+            <Text style={[styles.formTitle, { marginBottom: 10 }]}>
+              Bookings Details
+            </Text>
             {selectedBooking && (
               <>
                 <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-                  Customer: <Text style={{ fontWeight: "normal" }}>{selectedBooking.name}</Text>
+                  Customer:{" "}
+                  <Text style={{ fontWeight: "normal" }}>
+                    {selectedBooking.name}
+                  </Text>
                 </Text>
                 <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-                  Payment Status: <Text style={{ fontWeight: "normal" }}>{selectedBooking.status}</Text>
+                  Payment Status:{" "}
+                  <Text style={{ fontWeight: "normal" }}>
+                    {selectedBooking.status}
+                  </Text>
                 </Text>
                 <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-                  Store: <Text style={{ fontWeight: "normal" }}>{selectedBooking.store}</Text>
+                  Store:{" "}
+                  <Text style={{ fontWeight: "normal" }}>
+                    {selectedBooking.store}
+                  </Text>
                 </Text>
                 {/* Add more booking details here as needed */}
               </>
@@ -737,24 +694,42 @@ const BookingsScreen = () => {
                 alignItems: "center",
                 marginVertical: 10,
               }}
-            // onPress={handleMarkPaymentAsDone} // Implement this if needed
+              // onPress={handleMarkPaymentAsDone} // Implement this if needed
             >
-              <Text style={{ color: "#fff", fontWeight: "bold" }}>Mark Payment As Done</Text>
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                Mark Payment As Done
+              </Text>
             </TouchableOpacity>
 
             {/* Example: Overs Played input */}
-            <View style={{ flexDirection:"row" ,justifyContent:"space-between"}}>
-            <Text style={{ fontWeight: "bold", marginBottom: 5 ,alignSelf:"center" }}>OVERS PLAYED</Text>
-            <TextInput
-              style={[styles.formInput, { marginBottom: 10,width: "60%" }]}
-              placeholder="Enter Overs Played"
-              placeholderTextColor="#94a3b8"
-            // value={} // Bind to state if you want to save this
-            // onChangeText={} // Bind to state if you want to save this
-            />
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  marginBottom: 5,
+                  alignSelf: "center",
+                }}
+              >
+                OVERS PLAYED
+              </Text>
+              <TextInput
+                style={[styles.formInput, { marginBottom: 10, width: "60%" }]}
+                placeholder="Enter Overs Played"
+                placeholderTextColor="#94a3b8"
+                // value={} // Bind to state if you want to save this
+                // onChangeText={} // Bind to state if you want to save this
+              />
             </View>
 
-            <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 10 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                gap: 10,
+              }}
+            >
               <TouchableOpacity
                 style={[styles.cancelButton, { flex: 1 }]}
                 onPress={() => setShowBookingDetailsModal(false)}
@@ -763,7 +738,7 @@ const BookingsScreen = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.submitButton, { flex: 1 }]}
-              // onPress={handleSubmitOversPlayed} // Implement this if needed
+                // onPress={handleSubmitOversPlayed} // Implement this if needed
               >
                 <Text style={styles.buttonText}>Submit</Text>
               </TouchableOpacity>
@@ -798,7 +773,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     newDirectBookingData.bookingType === "Package" &&
-                    styles.typeSelectorButtonActive,
+                      styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleNewDirectBookingFormChange("bookingType", "Package")
@@ -808,7 +783,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       newDirectBookingData.bookingType === "Package" &&
-                      styles.typeSelectorTextActive,
+                        styles.typeSelectorTextActive,
                     ]}
                   >
                     Package
@@ -818,7 +793,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     newDirectBookingData.bookingType === "Custom" &&
-                    styles.typeSelectorButtonActive,
+                      styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleNewDirectBookingFormChange("bookingType", "Custom")
@@ -828,7 +803,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       newDirectBookingData.bookingType === "Custom" &&
-                      styles.typeSelectorTextActive,
+                        styles.typeSelectorTextActive,
                     ]}
                   >
                     Custom
@@ -1009,7 +984,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     customerBookingData.bookingType === "Package" &&
-                    styles.typeSelectorButtonActive,
+                      styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleCustomerBookingFormChange("bookingType", "Package")
@@ -1019,7 +994,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       customerBookingData.bookingType === "Package" &&
-                      styles.typeSelectorTextActive,
+                        styles.typeSelectorTextActive,
                     ]}
                   >
                     Package
@@ -1029,7 +1004,7 @@ const BookingsScreen = () => {
                   style={[
                     styles.typeSelectorButton,
                     customerBookingData.bookingType === "Custom" &&
-                    styles.typeSelectorButtonActive,
+                      styles.typeSelectorButtonActive,
                   ]}
                   onPress={() =>
                     handleCustomerBookingFormChange("bookingType", "Custom")
@@ -1039,7 +1014,7 @@ const BookingsScreen = () => {
                     style={[
                       styles.typeSelectorText,
                       customerBookingData.bookingType === "Custom" &&
-                      styles.typeSelectorTextActive,
+                        styles.typeSelectorTextActive,
                     ]}
                   >
                     Custom

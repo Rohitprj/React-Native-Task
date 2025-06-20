@@ -37,7 +37,7 @@ interface StoreListApiResponse {
   message?: string;
 }
 
-const OverviewScreen: React.FC = () => {
+const StoreScreen: React.FC = () => {
   const navigation = useNavigation<DrawerNavigationProp<any>>();
   const router = useRouter();
 
@@ -57,7 +57,9 @@ const OverviewScreen: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.get<StoreListApiResponse>("/admin/store");
+      const response = await axiosInstance.get<StoreListApiResponse>(
+        "/admin/store"
+      );
       const asyncUserData = await getUserData();
       if (asyncUserData?.email) setUserEmail(asyncUserData.email);
 
@@ -75,7 +77,9 @@ const OverviewScreen: React.FC = () => {
           ...store,
           image:
             imageMap[store.id] ??
-            `https://placehold.co/360x180/ADD8E6/000000?text=${encodeURIComponent(store.name)}`,
+            `https://placehold.co/360x180/ADD8E6/000000?text=${encodeURIComponent(
+              store.name
+            )}`,
         }));
 
         setStores(enhancedStores);
@@ -154,7 +158,11 @@ const OverviewScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
+      />
 
       <View style={styles.header}>
         {/* <TouchableOpacity
@@ -162,7 +170,7 @@ const OverviewScreen: React.FC = () => {
           style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
         >
           <Feather name="menu" size={24} color="black" /> */}
-          <Text style={styles.headerText}>{headerStoreName}</Text>
+        <Text style={styles.headerText}>{headerStoreName}</Text>
         {/* </TouchableOpacity> */}
         <TouchableOpacity
           style={styles.headerIcons}
@@ -176,7 +184,10 @@ const OverviewScreen: React.FC = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalEmail}>{userEmail}</Text>
-            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={handleLogout}
+            >
               <Text style={styles.logoutButtonText}>Logout</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setShowLogout(false)}>
@@ -205,7 +216,7 @@ const OverviewScreen: React.FC = () => {
     </View>
   );
 };
-export default OverviewScreen;
+export default StoreScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -333,7 +344,8 @@ const styles = StyleSheet.create({
   emptyListText: {
     color: "#94a3b8",
     fontSize: 16,
-  },modalOverlay: {
+  },
+  modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
