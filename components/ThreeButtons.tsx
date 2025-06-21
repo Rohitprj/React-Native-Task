@@ -1,4 +1,3 @@
-import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -6,10 +5,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 const ThreeButtons = () => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconButton}>
         {/* <Icon name="download" size={20} color="white" /> */}
+      {/* <TouchableOpacity style={styles.iconButton}>
         <Feather name="download" size={16} color="white" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity style={styles.textButton}>
         <Text style={styles.buttonText}>All</Text>

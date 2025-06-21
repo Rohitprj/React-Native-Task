@@ -20,6 +20,10 @@ export default function DrawerLayout() {
       <View style={styles.drawerContainer}>
         <Text style={styles.drawerTitle}>Admin</Text>
 
+          <DrawerItem
+            label="Overview"
+            onPress={() => router.push("/Overview")}
+          />
         <DrawerItem label="Store" onPress={() => router.push("/(admin)/(tabs)")} />
         <DrawerItem
           label="Customer"
