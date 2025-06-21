@@ -29,9 +29,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/Logo/AndroidCompact.png",
-          "imageWidth": 200,
-          "resizeMode": "cover",
+          "image": "./assets/Logo/striketheball.gif",
+          "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
       ]
