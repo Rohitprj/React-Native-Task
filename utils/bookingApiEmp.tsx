@@ -1,9 +1,9 @@
 import axiosInstance from "./axiosInstance"; // Import your pre-configured axios instance
 import {
-    AdminDirectBookingPayload,
-    BookingData,
-    BookingsApiResponse,
-    NewBookingPayload,
+  AdminDirectBookingPayload,
+  BookingData,
+  BookingsApiResponse,
+  NewBookingPayload,
 } from "./types/bookingTypes";
 
 export async function fetchBookingsApi(): Promise<BookingData[]> {
@@ -11,7 +11,7 @@ export async function fetchBookingsApi(): Promise<BookingData[]> {
     const response = await axiosInstance.get<BookingsApiResponse>(
       "/emp/booking"
     ); // Use relative path
-    console.log("Bookings API Success All Data Raw Response:"); // Log the full raw response for debugging
+    console.log("Bookings API Success All Data Raw Response:",response.data.bookings); // Log the full raw response for debugging
 
     if (response.data && Array.isArray(response.data.bookings)) {
       return response.data.bookings;

@@ -90,7 +90,7 @@ const modalCalculatedWidth = screenWidth * 0.9;
 const BookingsScreen = () => {
   const [bookings, setBookings] = useState<DisplayBookingItem[]>([]);
 
-  console.log("All Bookings", bookings);
+  // console.log("All Bookings", bookings);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

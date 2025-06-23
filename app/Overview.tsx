@@ -1,4 +1,3 @@
-import ThreeButtons from "@/components/ThreeButtons";
 import overview from "@/utils/overview";
 import {
     CardItem,
@@ -397,7 +396,7 @@ const OverviewScreen: React.FC = () => {
         </View> */}
             </View>
 
-            <ThreeButtons />
+            {/* <ThreeButtons /> */}
 
             {/* Cards */}
             <FlatList
@@ -443,6 +442,7 @@ const styles = StyleSheet.create({
     listContent: {
         paddingHorizontal: 10,
         paddingBottom: 80,
+        marginTop: 20,
     },
     card: {
         backgroundColor: "#11245A",
