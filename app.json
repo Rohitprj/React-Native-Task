@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Task",
+    "name": "Strike the ball",
     "slug": "Task",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/Logo/icon.png",
     "scheme": "task",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
