@@ -27,7 +27,12 @@
     "plugins": [
       "expo-router",
       [
-        "expo-splash-screen"
+        "expo-splash-screen",
+        {
+          "image": "./assets/Logo/AndroidCompact.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
       ],
       "expo-web-browser"
     ],
