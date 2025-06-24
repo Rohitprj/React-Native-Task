@@ -57,5 +57,24 @@
     "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "eas-cli": {
+      "@expo/config-plugins": "^10.0.0",
+      "@expo/prebuild-config": "^9.0.0"
+    },
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-picker/picker": "2.11.0"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false,
+        "exclude": [
+          "eas-cli",
+          "react-native-vector-icons"
+        ]
+      }
+    }
+  }
 }
