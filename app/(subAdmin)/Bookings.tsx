@@ -3297,7 +3297,7 @@ import {
   BookingData, // Assuming this exists and has the necessary fields
   NewBookingPayload,
 } from "@/utils/types/bookingTypes";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker"; // Import DatePicker
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
@@ -3997,10 +3997,10 @@ const BookingsScreen = () => {
 
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => navigation.openDrawer()}
+          // onPress={() => navigation.openDrawer()}
           style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
         >
-          <Feather name="menu" size={24} color="black" />
+          {/* <Feather name="menu" size={24} color="black" /> */}
           <Text style={styles.headerTitle}>Bookings</Text>
         </TouchableOpacity>
         <Ionicons name="person-circle-outline" size={28} color="black" />
