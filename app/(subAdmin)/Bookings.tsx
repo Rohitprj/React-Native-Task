@@ -3997,10 +3997,8 @@ const BookingsScreen = () => {
 
       <View style={styles.header}>
         <TouchableOpacity
-          // onPress={() => navigation.openDrawer()}
           style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
         >
-          {/* <Feather name="menu" size={24} color="black" /> */}
           <Text style={styles.headerTitle}>Bookings</Text>
         </TouchableOpacity>
         <Ionicons name="person-circle-outline" size={28} color="black" />
